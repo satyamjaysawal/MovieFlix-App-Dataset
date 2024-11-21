@@ -1,0 +1,10 @@
+Flask
+pandas
+Flask-Cors
+Werkzeug
+flask-session 
+flask-bcrypt
+flask-login
+gunicorn
+pymongo
+python-dotenv

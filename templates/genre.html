@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies by Genre</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212 url('https://github.com/user-attachments/assets/da4c38ab-265b-4af1-b961-2204f2eb291c') no-repeat center/cover;
+            margin: 0;
+            color: #eaeaea;
+            line-height: 1.6;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #1f1f1f;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(65, 70, 75, 0.3);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00d1b2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .navbar-brand:hover {
+            color: #00b09b;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn-link {
+            font-size: 1rem;
+            color: #eaeaea;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            background-color: transparent;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-link:hover {
+            background-color: #00d1b2;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+
+        /* Genre & Movie Sections */
+        .genres-section,
+        .movies-section {
+            padding: 2rem;
+            margin: 2rem auto;
+            background: #222;
+            border-radius: 12px;
+            max-width: 1200px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid #00d1b2;
+            padding-left: 0.75rem;
+        }
+
+        /* Checkbox & Movie List */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            background: #333;
+            border: 2px solid #444;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-group input[type="checkbox"]:checked+label {
+            background: #00d1b2;
+            color: white;
+            border-color: #00d1b2;
+            transform: scale(1.05);
+        }
+
+        .movies-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 0;
+            list-style: none;
+        }
+
+        .movie-item {
+            background: #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            padding: 1rem;
+            overflow: hidden;
+            font-size: smaller;
+        }
+
+        .movie-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .movie-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            
+        }
+
+        /* Review Section */
+        .review-section {
+            padding: 0.75rem;
+            margin-top: 1rem;
+            background: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .review-section:hover {
+            transform: scale(1.01);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-review {
+            display: flex;
+            align-items: center;
+            background: #333;
+            color: #00d1b2;
+            border: 2px solid #00d1b2;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 0.5rem 0.8rem;
+            font-size: smaller;
+            transition: all 0.3s;
+        }
+
+        .toggle-review:hover {
+            background: #00d1b2;
+            color: #ffffff;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        .star.filled {
+            color: #FFD700;
+        }
+
+        .star:hover {
+            transform: scale(1.1);
+            color: #FFD700;
+        }
+
+        /* Form Styles */
+        .review-section form {
+            margin-top: 0.5rem;
+        }
+
+        .review-section label {
+            font-weight: bold;
+            color: #cccccc;
+            margin-bottom: 0.4rem;
+        }
+
+        .review-section textarea {
+            width: 100%;
+            background: #333;
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #eaeaea;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .review-section textarea:focus {
+            border-color: #00d1b2;
+            outline: none;
+        }
+
+        .icon-button,
+        .review-section button[type="submit"] {
+            background: #00d1b2;
+            border: none;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: smaller;
+            transition: background 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .icon-button.delete-icon {
+            background-color: #e74c3c;
+        }
+
+        .icon-button:hover,
+        .review-section button[type="submit"]:hover {
+            background-color: #00a591;
+            transform: scale(1.05);
+        }
+
+        .icon-button.delete-icon:hover {
+            background-color: #c0392b;
+        }
+
+        /* Review Content */
+        .review-content {
+            margin-top: 0.5rem;
+            background: #282828;
+            padding: 0.8rem;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .review-content p {
+            color: #bbbbbb;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .pagination a {
+            color: #00d1b2;
+            padding: 0.4rem 1rem;
+            border: 2px solid #00d1b2;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .pagination a:hover {
+            background: #00d1b2;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Flash Message Styles */
+        /* Flash Message Styles */
+        .flash-messages {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            z-index: 1000;
+        }
+
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Success Flash Message */
+        .flash-message.success {
+            background-color: #28a745;
+            /* Green */
+            border-left: 5px solid #218838;
+        }
+
+        /* Danger Flash Message */
+        .flash-message.danger {
+            background-color: #dc3545;
+            /* Red */
+            border-left: 5px solid #c82333;
+        }
+
+        /* Warning Flash Message */
+        .flash-message.warning {
+            background-color: #ffc107;
+            /* Yellow */
+            border-left: 5px solid #e0a800;
+        }
+
+        .flash-message.fade-out {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar Section -->
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-film"></i> MovieFlix
+            </a>
+            <div class="navbar-links">
+                <a href="{{ url_for('home') }}" class="btn-link">Return to Home</a>
+                <a href="{{ url_for('logout') }}" class="btn-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Message Section -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+        <div
+            class="flash-message {{ 'success' if 'success' in message else 'danger' if 'danger' in message else 'warning' }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+
+    <section class="genres-section">
+        <h2>Select Genres</h2>
+        <form method="GET" action="{{ url_for('index') }}">
+            {% for genre in genres %}
+            <label>
+                <input type="checkbox" name="genres" value="{{ genre }}" {% if genre.lower() in selected_genres
+                    %}checked{% endif %}>
+                {{ genre }}
+            </label>
+            {% endfor %}
+            <button type="submit">Filter</button>
+        </form>
+    </section>
+
+    <section class="movies-section">
+        <h2>Filtered Movies</h2>
+        {% if filtered_movies %}
+        <ul class="movies-list">
+            {% for movie in filtered_movies %}
+            <li class="movie-item">
+                <img src="{{ movie['Movie-Image-Url'] }}" alt="{{ movie['Title'] }}" width="100">
+                <h3>{{ movie['Title'] }}</h3>
+                <p><strong>Genres:</strong> {{ ", ".join(movie['Genre']) }}</p>
+                <p><strong>Description:</strong> {{ movie['Description'] }}</p>
+    
+                <!-- Additional Movie Info -->
+                <p><strong>Year:</strong> {{ movie['Year'] }}</p>
+                <p><strong>Runtime:</strong> {{ movie['Runtime (Minutes)'] }} minutes</p>
+                <p><strong>Rating:</strong> {{ movie['Rating'] }}</p>
+                <p><strong>Votes:</strong> {{ movie['Votes'] }}</p>
+                <p><strong>Revenue:</strong> ${{ movie['Revenue (Millions)'] }} million</p>
+    
+                <!-- Review Section -->
+                <div class="review-section">
+                    <button type="button" class="toggle-review" onclick="toggleReviewSection(this)">
+                        Show Review +
+                    </button>
+    
+                    <div class="review-content" style="display: none;">
+                        {% if movie['Title'] in movie_reviews and current_user.id in movie_reviews[movie['Title']] %}
+                        <div>
+                            <p><strong>Your Review:</strong></p>
+                            <p>
+                                <strong>Rating: </strong>
+                                <span class="star-rating">
+                                    {% for i in range(5) %}
+                                    {% if i < movie_reviews[movie['Title']][current_user.id]['rating'] %}
+                                    <span class="star filled">&#9733;</span>
+                                    {% else %}
+                                    <span class="star">&#9734;</span>
+                                    {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </p>
+                            <p>Review: {{ movie_reviews[movie['Title']][current_user.id]['review'] }}</p>
+    
+                            <!-- Edit Review Form -->
+                            <form method="POST" action="{{ url_for('edit_review') }}">
+                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
+                                <div class="star-rating">
+                                    {% for i in range(5) %}
+                                    <span class="star" data-index="{{ i + 1 }}"
+                                        onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="rating" id="rating-{{ loop.index }}"
+                                    value="{{ movie_reviews[movie['Title']][current_user.id]['rating'] }}">
+                                <label for="edit-review-{{ loop.index }}">Edit Review:</label>
+                                <textarea name="review" id="edit-review-{{ loop.index }}"
+                                    rows="2">{{ movie_reviews[movie['Title']][current_user.id]['review'] }}</textarea>
+                                <button type="submit" title="Update Review" class="icon-button">Update Review
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </form>
+    
+                            <!-- Delete Review Form -->
+                            <form action="{{ url_for('delete_review') }}" method="POST">
+                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
+                                <button type="submit" title="Delete Review" class="icon-button delete-icon">Delete
+                                    Review
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <!-- New Review Form -->
+                        <form method="POST" action="{{ url_for('submit_review') }}">
+                            <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
+                            <div class="star-rating">
+                                {% for i in range(5) %}
+                                <span class="star" data-index="{{ i + 1 }}"
+                                    onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="rating" id="rating-{{ loop.index }}" value="0">
+                            <label for="review-{{ loop.index }}">Review:</label>
+                            <textarea name="review" id="review-{{ loop.index }}" rows="2"></textarea>
+                            <button type="submit">Submit Review</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+    
+            </li>
+            {% endfor %}
+        </ul>
+    
+        <div class="pagination">
+            {% if pagination.prev_page %}
+            <a href="{{ url_for('index', genres=selected_genres, page=pagination.prev_page) }}">Previous</a>
+            {% endif %}
+            <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
+            {% if pagination.next_page %}
+            <a href="{{ url_for('index', genres=selected_genres, page=pagination.next_page) }}">Next</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No movies match the selected genres. Please try again.</p>
+        {% endif %}
+    </section>
+    
+    <script>
+        function toggleReviewSection(button) {
+            const reviewContent = button.nextElementSibling;
+            if (reviewContent.style.display === "none") {
+                reviewContent.style.display = "block";
+                button.textContent = "Hide Review -";
+            } else {
+                reviewContent.style.display = "none";
+                button.textContent = "Show Review +";
+            }
+        }
+
+        function setRating(event, rating) {
+            const stars = event.target.parentElement.children;
+            const ratingInput = event.target.closest('form').querySelector('input[name="rating"]');
+            // Set the rating value
+            ratingInput.value = rating;
+
+            // Set the filled stars
+            for (let i = 0; i < stars.length; i++) {
+                if (i < rating) {
+                    stars[i].classList.add('filled');
+                } else {
+                    stars[i].classList.remove('filled');
+                }
+            }
+        }
+    </script>
+
+</body>
+<script>
+    // Function to hide flash messages after 3 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+        const flashMessages = document.querySelectorAll('.flash-message');
+
+        flashMessages.forEach(function (message) {
+            setTimeout(function () {
+                message.classList.add('fade-out'); // Add fade-out class
+                setTimeout(function () {
+                    message.style.display = 'none'; // Hide element after fade-out
+                }, 500); // 500ms to wait for fade-out animation to complete
+            }, 3000);  // 3000 milliseconds = 3 seconds
+        });
+    });
+
+
+</script>
+
+</html>

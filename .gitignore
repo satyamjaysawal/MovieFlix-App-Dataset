@@ -1,0 +1,57 @@
+# Python-related files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual Environment
+venv/
+env/
+
+# Flask instance folder
+instance/
+
+# Flask configuration file
+config.py
+
+# Database
+*.sqlite3
+*.db
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# IDE or editor folders
+.vscode/
+.idea/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment variable files
+.env
+*.env
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+*.coverage
+.coverage.*
+
+# Byte-compiled files
+*.pyc
+*.pyo
+
+# Flask-Migrate
+migrations/
+
+# Dependency directories
+node_modules/
+
+# Front-end build folders (if applicable)
+dist/
+build/
