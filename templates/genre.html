@@ -278,6 +278,39 @@
             color: #bbbbbb;
         }
 
+
+/* Filter Button Style */
+.filter-button {
+    background-color: #00d1b2;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background-color 0.3s;
+    width: 90px;
+    height: 40px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/* Hover Effect */
+.filter-button:hover {
+    background-color: #00bfa6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Active Effect */
+.filter-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    background-color: #008f87;
+}
+
         /* Pagination */
         .pagination {
             display: flex;
@@ -391,7 +424,8 @@
                 {{ genre }}
             </label>
             {% endfor %}
-            <button type="submit">Filter</button>
+            <button class="filter-button" type="submit ">Filter</button>
+           
         </form>
     </section>
 
