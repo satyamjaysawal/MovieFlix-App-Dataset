@@ -90,6 +90,7 @@ body {
     border-radius: 15px;
     max-width: 850px;
     margin: 40px auto;
+    height: 400px;
     text-align: center;
 }
 
@@ -160,13 +161,19 @@ body {
 }
 
 .search-button {
-    font-size: 14px;
-    padding: 10px 25px;
+    font-size: 18px;
+    padding: 12px 30px;
     border-radius: 8px;
+    height: 50px;
     background-color: #007bff;
     color: #ffffff;
     border: none;
     cursor: pointer;
+}
+.search-button i {
+    font-size: 20px; 
+    margin-left: 20px;
+
 }
 
 .search-button:hover {
@@ -174,8 +181,23 @@ body {
     transform: scale(1.02);
 }
 
+.filter_movies {
+    margin-top: 40px;
+    height: 35px;
+    
+}
+
+.filter_movies a{
+    text-decoration: none;
+}
+
+.genre {
+    margin-right: 15px;
+}
+
 /* Footer */
 .footer {
+    position: relative;
     text-align: center;
     background-color: #181818;
     color: #eaeaea;
@@ -249,7 +271,7 @@ body {
                    
                     <li class="nav-item">
                         <!-- Display 'Welcome, <username>' if the user is authenticated -->
-                        <p>Welcome, {{ username }}!</p> 
+                        <p>Welcome, {{ username | capitalize }}!</p> 
                     </li>
                     <!-- Show Logout button if user IS logged in -->
                     <li class="nav-item">
@@ -290,20 +312,15 @@ body {
 
         <!-- Search Section -->
         <div class="search-container">
-            <h2 class="search-title">Search Movies</h2>
             <form method="GET" action="{{ url_for('search') }}" class="search-box">
                 <input type="text" name="query" class="form-control search-input" placeholder="Search for a movie..."
                     required>
-                <button type="submit" class="search-button">Search</button>
+                <button type="submit" class="search-button">Search<i class="fas fa-search search-icon"></i></button>
             </form>
         </div>
 
-        <div class="button-container">
-            <a href="{{ url_for('index') }}" class="button action-button">Select Genres</a>
-        </div>
-        <!-- Trending Movies -->
-        <div class="mt-5">
-            <h2 class="search-title">Trending Movies</h2>
+        <div class="button-container filter_movies">
+            <a href="{{ url_for('index') }}" class="button action-button genre">Select Genres</a>
             <a href="{{ url_for('popular_trending') }}" class="button action-button">Popular & Trending Movies</a>
         </div>
     </div>
@@ -326,7 +343,7 @@ body {
                 setTimeout(function () {
                     alert.classList.remove('show');
                     alert.classList.add('fade');
-                }, 3000);
+                }, 500);
             });
         });
     </script>
