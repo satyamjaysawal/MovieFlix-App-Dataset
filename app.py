@@ -12,7 +12,6 @@ from datetime import timedelta
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
-
 app.permanent_session_lifetime = timedelta(minutes=45)
 
 bcrypt = Bcrypt(app)
@@ -82,7 +81,6 @@ def login():
             login_user(user_obj)
              # Make the session permanent
             session.permanent = True
-
             flash("Login successful!", 'login')
             return redirect(url_for('home'))
         else:
@@ -142,6 +140,16 @@ def index():
                            pagination=pagination,
                            movie_reviews=movie_reviews)
 
+@app.route('/popular_trending', methods=['GET'])
+@login_required
+def popular_trending():
+    top_rated_movies = movies_df.nlargest(12, 'Votes')[[ 'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director']]
+    top_revenue_movies = movies_df.nlargest(12, 'Revenue (Millions)')[[ 'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director']]
+
+    return render_template('popular_trending.html', 
+                           top_rated_movies=top_rated_movies, 
+                           top_revenue_movies=top_revenue_movies)
+
 @app.route('/search', methods=['GET'])
 @login_required
 def search():
@@ -155,22 +163,10 @@ def search():
             if title_match or description_match:
                 search_results.append(movie.to_dict())
 
-    return render_template('search.html', search_results=search_results)
+    # Fetch movie reviews
+    movie_reviews = {review['movie_title']: review['reviews'] for review in reviews_collection.find()}
 
-@app.route('/popular_trending', methods=['GET'])
-@login_required
-def popular_trending():
-    top_rated_movies = movies_df.nlargest(12, 'Votes')[[
-        'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director'
-    ]]
-
-    top_revenue_movies = movies_df.nlargest(12, 'Revenue (Millions)')[[
-        'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director'
-    ]]
-
-    return render_template('popular_trending.html', 
-                           top_rated_movies=top_rated_movies, 
-                           top_revenue_movies=top_revenue_movies)
+    return render_template('search.html', search_results=search_results, movie_reviews=movie_reviews)
 
 @app.route('/submit_review', methods=['POST'])
 @login_required
@@ -197,7 +193,8 @@ def submit_review():
         })
         flash(f"Your review for '{movie_title}' has been submitted successfully!", 'success')
 
-    return redirect(request.referrer)
+    return redirect(request.referrer)  # Redirects back to the same page the user came from
+
 
 @app.route('/edit_review', methods=['POST'])
 @login_required
@@ -236,9 +233,9 @@ def delete_review():
             reviews_collection.delete_one({"movie_title": movie_title})
         flash(f"Your review for '{movie_title}' has been deleted successfully!", 'success')
     else:
-        flash(f"You haven't reviewed the movie '{movie_title}' yet or the review is already deleted.", 'danger')
+        flash("You haven't reviewed this movie yet.", 'danger')
 
     return redirect(request.referrer)
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+if __name__ == '__main__':
+    app.run(debug=True)
