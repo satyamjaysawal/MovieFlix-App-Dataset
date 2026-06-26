@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Form, Query
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 load_dotenv()
@@ -24,14 +23,12 @@ app = FastAPI(title="MovieFlix")
 secret_key = os.getenv('SECRET_KEY', 'movieflix-super-secret-key-12345')
 app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
-# Mount static files directory
-try:
-    app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
-except Exception as e:
-    print(f"Static mount warning: {e}")
+# NOTE: Static files are served by Vercel's @vercel/static builder directly.
+# Do NOT mount StaticFiles here — it crashes Vercel serverless cold starts.
 
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
 
 # Reviews persistence file
 REVIEWS_FILE = BASE_DIR / "reviews.json"
