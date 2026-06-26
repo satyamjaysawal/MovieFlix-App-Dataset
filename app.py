@@ -2,6 +2,7 @@ import os
 import json
 import uuid
 from math import ceil
+from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -13,6 +14,9 @@ from starlette.middleware.sessions import SessionMiddleware
 
 load_dotenv()
 
+# Base directory — always resolves correctly on Vercel serverless too
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(title="MovieFlix")
 
 # Secret key for session management
@@ -20,29 +24,39 @@ secret_key = os.getenv('SECRET_KEY', 'movieflix-super-secret-key-12345')
 app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
 # Mount static files directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 # Setup Jinja2 templates
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Reviews persistence file
-REVIEWS_FILE = "reviews.json"
+REVIEWS_FILE = BASE_DIR / "reviews.json"
+
+# In-memory reviews fallback for read-only filesystems (e.g. Vercel)
+_memory_reviews = {}
 
 def load_reviews():
-    if not os.path.exists(REVIEWS_FILE):
-        return {}
+    global _memory_reviews
+    if _memory_reviews:
+        return _memory_reviews
     try:
-        with open(REVIEWS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        if REVIEWS_FILE.exists():
+            with open(REVIEWS_FILE, 'r', encoding='utf-8') as f:
+                _memory_reviews = json.load(f)
+                return _memory_reviews
     except Exception:
-        return {}
+        pass
+    return {}
 
 def save_reviews(reviews):
+    global _memory_reviews
+    _memory_reviews = reviews
     try:
         with open(REVIEWS_FILE, 'w', encoding='utf-8') as f:
             json.dump(reviews, f, indent=4, ensure_ascii=False)
     except Exception as e:
-        print(f"Error saving reviews: {e}")
+        # Vercel has read-only filesystem — reviews stay in memory for this session
+        print(f"Note: Reviews stored in memory only (read-only filesystem): {e}")
 
 
 # Flash message utilities
@@ -57,8 +71,8 @@ def get_flashed_messages(request: Request):
 # Register flash messages in Jinja global context
 templates.env.globals["get_flashed_messages"] = get_flashed_messages
 
-# Load movies dataset
-movies_df = pd.read_csv('MovieDataSet.csv')
+# Load movies dataset using absolute path
+movies_df = pd.read_csv(str(BASE_DIR / "MovieDataSet.csv"))
 default_image_url = "https://github.com/user-attachments/assets/eea04eb6-fdb8-477f-99b8-e4b2150c7421"
 
 # Prepare dataset fields
@@ -80,6 +94,7 @@ movies_df['Rating'] = movies_df['Rating'].fillna(0.0)
 movies_df['Votes'] = movies_df['Votes'].fillna(0)
 movies_df['Revenue (Millions)'] = movies_df['Revenue (Millions)'].fillna(0.0)
 movies_df['Metascore'] = movies_df['Metascore'].fillna(0)
+
 
 @app.get("/")
 def home(request: Request, page: int = Query(default=1)):
