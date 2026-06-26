@@ -1,10 +1,7 @@
-Flask
+fastapi
+uvicorn
+jinja2
 pandas
-Flask-Cors
-Werkzeug
-flask-session 
-flask-bcrypt
-flask-login
-gunicorn
-pymongo
 python-dotenv
+passlib[bcrypt]
+python-multipart

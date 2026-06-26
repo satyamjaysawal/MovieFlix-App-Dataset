@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix - Interactive Box Office Analytics</title>
+    <!-- Theme Switcher Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 0;
+            pointer-events: none;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .mesh-blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+            top: -10%;
+            right: -5%;
+        }
+        .mesh-blob-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+            bottom: -20%;
+            left: -10%;
+            animation-delay: -5s;
+        }
+        @keyframes float {
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(50px, 80px) scale(1.1); }
+            100% { transform: translate(-20px, -40px) scale(0.95); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#03000a] text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col relative overflow-x-hidden selection:bg-violet-600 selection:text-white transition-colors duration-300">
+
+    <!-- Radial Background blobs -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="mesh-blob mesh-blob-1 opacity-[0.04] dark:opacity-10"></div>
+        <div class="mesh-blob mesh-blob-2 opacity-[0.04] dark:opacity-10"></div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-white/5 bg-white/70 dark:bg-[#03000a]/70 backdrop-blur-xl transition-colors duration-300">
+        <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="/" class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                    <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                    </div>
+                    <span>MovieFlix</span>
+                </a>
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-800 dark:text-slate-200 transition-all shadow-sm" title="Toggle Light/Dark Mode">
+                    <i id="theme-icon-light" class="fa-solid fa-moon text-sm dark:hidden"></i>
+                    <i id="theme-icon-dark" class="fa-solid fa-sun text-sm hidden dark:block text-amber-400 animate-spin-slow"></i>
+                </button>
+                <!-- Analytics Quick Access Button -->
+                <a href="/analytics" class="h-9 px-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 hover:opacity-95 text-white flex items-center gap-1.5 text-xs font-bold transition-all shadow-md shadow-violet-500/10 hover:shadow-violet-500/25 hover:-translate-y-0.5 active:translate-y-0 font-outfit" title="Interactive Analytics Dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+            <nav class="flex items-center gap-6">
+                <a href="/genres" class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Genres</a>
+                <a href="/popular_trending" class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Popular & Trending</a>
+                <a href="/analytics" class="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-750 dark:hover:text-violet-300 transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-full after:h-[2px] after:bg-violet-500 after:transition-all">Analytics</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-6 py-10 flex flex-col gap-8 z-10">
+        
+        <!-- Heading -->
+        <div class="space-y-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-600/10 dark:bg-violet-500/10 text-[10px] font-extrabold uppercase tracking-widest text-violet-700 dark:text-violet-300 font-outfit">
+                <i class="fa-solid fa-chart-pie text-[9px]"></i>
+                <span>Database Insights</span>
+            </span>
+            <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">Box Office Analytics</h1>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 max-w-xl font-light">Interactive data visualizations representing genres distribution, box office revenues, and rating correlations.</p>
+        </div>
+
+        <!-- Dashboard Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Chart 1: Genres Movie Count -->
+            <div class="p-6 rounded-3xl border border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold tracking-tight text-slate-800 dark:text-white font-outfit flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-film text-violet-500"></i>
+                        <span>Movies Count by Genre</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 font-light mb-6">Total cataloged movies distributed across different styles.</p>
+                </div>
+                <div class="h-80 w-full flex items-center justify-center">
+                    <canvas id="genreCountChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Average Revenue by Genre -->
+            <div class="p-6 rounded-3xl border border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold tracking-tight text-slate-800 dark:text-white font-outfit flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-sack-dollar text-emerald-500"></i>
+                        <span>Average Revenue by Genre (Millions)</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 font-light mb-6">Mean box office earnings normalized per genre style.</p>
+                </div>
+                <div class="h-80 w-full flex items-center justify-center">
+                    <canvas id="genreRevenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Yearly Trends -->
+            <div class="p-6 rounded-3xl border border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold tracking-tight text-slate-800 dark:text-white font-outfit flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-chart-line text-cyan-500"></i>
+                        <span>Yearly Box Office & Rating Growth</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 font-light mb-6">Evolution of average earnings and score values over release years.</p>
+                </div>
+                <div class="h-80 w-full flex items-center justify-center">
+                    <canvas id="yearlyTrendsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4: Director Standings -->
+            <div class="p-6 rounded-3xl border border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold tracking-tight text-slate-800 dark:text-white font-outfit flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-clapperboard text-fuchsia-500"></i>
+                        <span>Top 5 Directors by Average Revenue</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 font-light mb-6">Highest earning filmmakers ordered by their average release performance.</p>
+                </div>
+                <div class="h-80 w-full flex items-center justify-center">
+                    <canvas id="directorStandingsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 5: Ratings Correlation Scatter Plot -->
+            <div class="p-6 rounded-3xl border border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl lg:col-span-2 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold tracking-tight text-slate-800 dark:text-white font-outfit flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-circle-nodes text-amber-500"></i>
+                        <span>IMDb Rating vs Metascore Correlation</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 font-light mb-6">Mapping user-submitted ratings against professional critic metascores.</p>
+                </div>
+                <div class="h-96 w-full flex items-center justify-center">
+                    <canvas id="ratingsScatterChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-[#03000a]/90 backdrop-blur-xl pt-12 pb-0 mt-12 z-10 transition-colors duration-300 font-sans">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-6">
+                <!-- Column 1: Brand -->
+                <div class="space-y-4 md:col-span-1">
+                    <a href="/" class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                        <span>MovieFlix</span>
+                    </a>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Discover the world of cinema. Check top reviews, explore box office analytics, and share your feedback anonymously.
+                    </p>
+                    <div class="flex items-center gap-4 pt-2">
+                        <a href="#" class="text-slate-400 hover:text-violet-500 dark:hover:text-violet-400 transition-colors" title="Twitter">
+                            <i class="fa-brands fa-twitter text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors" title="Discord">
+                            <i class="fa-brands fa-discord text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="GitHub">
+                            <i class="fa-brands fa-github text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="YouTube">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Explore -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">Explore</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li><a href="/genres" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Browse Genres</a></li>
+                        <li><a href="/popular_trending" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Popular & Trending</a></li>
+                        <li><a href="/" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Latest Discoveries</a></li>
+                        <li><a href="/search" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Search Library</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Stats -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">MovieFlix Stats</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li class="flex items-center justify-between">
+                            <span>Catalog Size</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">950+ Movies</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>New Additions</span>
+                            <span class="font-bold text-violet-600 dark:text-violet-400 font-outfit">2026 Releases</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Rating Source</span>
+                            <span class="font-bold text-amber-500 font-outfit">IMDb & OMDb</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Platform</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">Anonymous Reviews</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Quick Action -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">Discover Movies</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Quickly find your next watch by searching titles or checking trending box office hits.
+                    </p>
+                    <a href="/popular_trending" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold text-xs shadow-lg shadow-violet-600/10 hover:opacity-90 transition-opacity active:scale-[0.98]">
+                        <i class="fa-solid fa-fire text-[10px]"></i>
+                        <span>Check Box Office Hits</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bottom Line -->
+            <div class="py-3 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-500">
+                <p>&copy; 2026 MovieFlix. All rights reserved. Powered by Kaggle IMDb Datasets.</p>
+                <div class="flex items-center gap-6">
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive script components -->
+    <script>
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateChartTheme();
+        }
+
+        // --- Data injected from Backend ---
+        const genreLabels = {{ genre_labels | tojson }};
+        const genreMovieCounts = {{ genre_movie_counts | tojson }};
+        const genreAvgRevenues = {{ genre_avg_revenues | tojson }};
+        
+        const yearlyLabels = {{ yearly_labels | tojson }};
+        const yearlyRatings = {{ yearly_ratings | tojson }};
+        const yearlyRevenues = {{ yearly_revenues | tojson }};
+        
+        const scatterData = {{ scatter_data | tojson }};
+        
+        const directorLabels = {{ director_labels | tojson }};
+        const directorValues = {{ director_values | tojson }};
+
+        // Charts configuration
+        let charts = {};
+
+        function getChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+                grid: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                text: isDark ? '#94a3b8' : '#475569',
+                tooltipBg: isDark ? '#0f172a' : '#ffffff',
+                tooltipText: isDark ? '#f1f5f9' : '#0f172a',
+            };
+        }
+
+        function initCharts() {
+            const colors = getChartColors();
+            Chart.defaults.font.family = 'Inter, sans-serif';
+
+            // 1. Genre Count Chart
+            charts.genreCount = new Chart(document.getElementById('genreCountChart'), {
+                type: 'bar',
+                data: {
+                    labels: genreLabels,
+                    datasets: [{
+                        label: 'Movies count',
+                        data: genreMovieCounts,
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                        borderColor: 'rgb(139, 92, 246)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { color: colors.grid }, ticks: { color: colors.text, font: { size: 9 } } },
+                        y: { grid: { color: colors.grid }, ticks: { color: colors.text } }
+                    }
+                }
+            });
+
+            // 2. Genre Revenue Chart
+            charts.genreRevenue = new Chart(document.getElementById('genreRevenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: genreLabels,
+                    datasets: [{
+                        label: 'Average Revenue ($M)',
+                        data: genreAvgRevenues,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { color: colors.grid }, ticks: { color: colors.text, font: { size: 9 } } },
+                        y: { grid: { color: colors.grid }, ticks: { color: colors.text } }
+                    }
+                }
+            });
+
+            // 3. Yearly Trends Chart
+            charts.yearlyTrends = new Chart(document.getElementById('yearlyTrendsChart'), {
+                type: 'line',
+                data: {
+                    labels: yearlyLabels,
+                    datasets: [
+                        {
+                            label: 'Avg Revenue ($M)',
+                            data: yearlyRevenues,
+                            borderColor: 'rgb(6, 182, 212)',
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Avg Rating',
+                            data: yearlyRatings,
+                            borderColor: 'rgb(245, 158, 11)',
+                            backgroundColor: 'transparent',
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: colors.text } }
+                    },
+                    scales: {
+                        x: { grid: { color: colors.grid }, ticks: { color: colors.text } },
+                        y: { 
+                            type: 'linear', 
+                            position: 'left', 
+                            grid: { color: colors.grid }, 
+                            ticks: { color: colors.text } 
+                        },
+                        y1: { 
+                            type: 'linear', 
+                            position: 'right', 
+                            grid: { drawOnChartArea: false }, 
+                            ticks: { color: colors.text },
+                            min: 0,
+                            max: 10
+                        }
+                    }
+                }
+            });
+
+            // 4. Director Standings Chart
+            charts.directorStandings = new Chart(document.getElementById('directorStandingsChart'), {
+                type: 'bar',
+                data: {
+                    labels: directorLabels,
+                    datasets: [{
+                        data: directorValues,
+                        backgroundColor: 'rgba(217, 70, 239, 0.7)',
+                        borderColor: 'rgb(217, 70, 239)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { color: colors.grid }, ticks: { color: colors.text } },
+                        y: { grid: { color: colors.grid }, ticks: { color: colors.text } }
+                    }
+                }
+            });
+
+            // 5. Ratings Correlation Chart
+            charts.ratingsScatter = new Chart(document.getElementById('ratingsScatterChart'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Movies',
+                        data: scatterData,
+                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                        borderColor: 'rgb(139, 92, 246)',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const movie = context.raw;
+                                    return `${movie.title} (IMDb: ${movie.x}, Metascore: ${movie.y})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'IMDb Rating', color: colors.text },
+                            grid: { color: colors.grid },
+                            ticks: { color: colors.text },
+                            min: 1,
+                            max: 10
+                        },
+                        y: {
+                            title: { display: true, text: 'Metascore', color: colors.text },
+                            grid: { color: colors.grid },
+                            ticks: { color: colors.text },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartTheme() {
+            const colors = getChartColors();
+            
+            Object.keys(charts).forEach(key => {
+                const chart = charts[key];
+                
+                // Update scales colors
+                if (chart.options.scales) {
+                    Object.keys(chart.options.scales).forEach(scaleKey => {
+                        const scale = chart.options.scales[scaleKey];
+                        if (scale.grid) scale.grid.color = colors.grid;
+                        if (scale.ticks) scale.ticks.color = colors.text;
+                        if (scale.title) scale.title.color = colors.text;
+                    });
+                }
+                
+                // Update legend colors
+                if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                    chart.options.plugins.legend.labels.color = colors.text;
+                }
+                
+                chart.update();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+        });
+    </script>
+</body>
+</html>

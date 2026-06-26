@@ -1,0 +1,36 @@
+{
+    "Guardians of the Galaxy": {
+        "36edf556-d8de-4a64-b27f-0210f9bc2143": {
+            "rating": 5,
+            "review": "Absolutely incredible movie!"
+        }
+    },
+    "Captain America: Civil War": {
+        "c411f662-ed60-4fd2-bd99-4603cd61bd36": {
+            "username": "Anonymous",
+            "rating": 4,
+            "review": "nice"
+        }
+    },
+    "Trolls": {
+        "d014de91-0c59-4172-b54c-8c9a0dbad7bd": {
+            "username": "Anonymous",
+            "rating": 0,
+            "review": "n"
+        }
+    },
+    "Avengers: Doomsday": {
+        "b6c9a545-3355-49a5-9b05-54a0de2c9132": {
+            "username": "Anonymous",
+            "rating": 5,
+            "review": "<img src=x onerror=\"console.log('CSS_INFO','html:',window.getComputedStyle(document.documentElement).height,'body:',window.getComputedStyle(document.body).height,'main:',document.querySelector('main')?window.getComputedStyle(document.querySelector('main')).height:'none','footer:',document.querySelector('footer')?window.getComputedStyle(document.querySelector('footer')).height:'none');\">"
+        }
+    },
+    "Shrek 5": {
+        "1ad55da6-863a-4592-9f4a-44015239eefe": {
+            "username": "satyam",
+            "rating": 4,
+            "review": "nice movie"
+        }
+    }
+}

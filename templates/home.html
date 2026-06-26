@@ -4,349 +4,584 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page - MovieFlix</title>
-    <!-- Bootstrap for better styling -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <title>MovieFlix - Discover Cinematic Wonders</title>
+    <!-- Theme Switcher Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-    /* Global Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('https://github.com/user-attachments/assets/da4c38ab-265b-4af1-b961-2204f2eb291c');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    margin: 0;
-    color: #eaeaea;
-    background-color: #121212;
-    line-height: 1.4;
-}
+        /* Animated radial light blobs in the background */
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 0;
+            pointer-events: none;
+            animation: float 20s infinite alternate ease-in-out;
+        }
 
-/* Navbar */
-.navbar {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(65, 70, 75, 0.3);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(8px);
-}
+        .mesh-blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+            top: -10%;
+            right: -5%;
+        }
 
-.navbar-brand {
-    font-weight: 600;
-    font-size: 1.5rem;
-    color: #00d1b2;
-    transition: color 0.3s ease;
-}
+        .mesh-blob-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+            bottom: -20%;
+            left: -10%;
+            animation-delay: -5s;
+        }
 
-.navbar-brand-icon {
-    margin-right: 6px;
-    color: #00d1b2;
-}
+        .mesh-blob-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+            top: 40%;
+            left: 30%;
+            animation-duration: 25s;
+        }
 
-.navbar-link {
-    font-size: 0.9rem;
-    color: #cfcfcf;
-    margin-left: 15px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    transition: color 0.3s, background-color 0.3s;
-}
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
 
-.navbar-link-logout {
-    font-weight: bold;
-    color: #ff5e57;
-}
+            50% {
+                transform: translate(50px, 80px) scale(1.1);
+            }
 
-/* Styling for the Welcome message */
-.navbar .nav-item p {
-    font-size: 1.2rem;
-    color: #00d1b2;
-    font-weight: bold;
-    margin: 0;
-    padding: 8px 16px;
-    background-color: rgba(28, 28, 28, 0.6);
-    border-radius: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease;
-}
-
-.navbar .nav-item p:hover {
-    transform: scale(1.05);
-    background-color: rgba(28, 28, 28, 0.8);
-}
-
-/* Main Container */
-.main-container {
-    padding: 40px 30px;
-    background-color: rgba(28, 28, 28, 0.9);
-    background-image: url('https://github.com/user-attachments/assets/e1eca3ee-593c-47a8-8cbc-f577a6c65025');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    border-radius: 15px;
-    max-width: 850px;
-    margin: 40px auto;
-    height: 400px;
-    text-align: center;
-}
-
-.main-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.main-paragraph {
-    font-size: 1.1rem;
-    color: #b0b0b0;
-    margin: 20px 0 30px;
-    line-height: 1.6;
-}
-
-/* Button Styles */
-.action-button {
-    font-size: 16px;
-    padding: 12px 30px;
-    border-radius: 8px;
-    background-color: #00d1b2;
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 25px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.action-button:hover {
-    background-color: #00f5d4;
-    transform: scale(1.04);
-}
-
-/* Search Section */
-.search-container {
-    margin-top: 40px;
-    border-top: 1px solid #444;
-    padding-top: 25px;
-}
-
-.search-title {
-    font-size: 1.8rem;
-    color: #ffffff;
-    margin-bottom: 20px;
-}
-
-.search-box {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.search-input {
-    font-size: 0.95rem;
-    padding: 10px;
-    width: 340px;
-    border-radius: 8px;
-    border: 2px solid #444;
-    background-color: #202020;
-    color: #eaeaea;
-    transition: border-color 0.3s ease;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.search-button {
-    font-size: 18px;
-    padding: 12px 30px;
-    border-radius: 8px;
-    height: 50px;
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-}
-.search-button i {
-    font-size: 20px; 
-    margin-left: 20px;
-
-}
-
-.search-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.02);
-}
-
-.filter_movies {
-    margin-top: 40px;
-    height: 35px;
-    
-}
-
-.filter_movies a{
-    text-decoration: none;
-}
-
-.genre {
-    margin-right: 15px;
-}
-
-/* Footer */
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #181818;
-    color:  #eaeaea;
-    text-align: center;
-    padding: 7px 0;
-    z-index: 1000; 
-    
-}
-
-.footer-link {
-    color: #00d1b2;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.footer-text {
-    color: #aaaaaa;
-}
-
-/* Responsiveness */
-@media (max-width: 768px) {
-    .main-container {
-        padding: 20px;
-    }
-
-    .main-title {
-        font-size: 1.8rem;
-    }
-
-    .main-paragraph {
-        font-size: 1rem;
-    }
-
-    .search-input {
-        width: 100%;
-    }
-
-    .search-button {
-        width: 100%;
-    }
-
-    .navbar-brand {
-        font-size: 1.3rem;
-    }
-
-    .navbar-link {
-        font-size: 0.85rem;
-    }
-
-    .action-button {
-        width: 100%;
-    }
-}
-
+            100% {
+                transform: translate(-20px, -40px) scale(0.95);
+            }
+        }
     </style>
 </head>
 
-<body class="body-background">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-film navbar-brand-icon"></i> MovieFlix
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                   
-                    <li class="nav-item">
-                        <!-- Display 'Welcome, <username>' if the user is authenticated -->
-                        <p>Welcome, {{ username | capitalize }}!</p> 
-                    </li>
-                    <!-- Show Logout button if user IS logged in -->
-                    <li class="nav-item">
-                        <a class="nav-link navbar-link-logout" href="{{ url_for('logout') }}">Logout</a>
-                    </li>
-                    {% else %}
-                    <!-- Show Login and Register buttons if user is NOT logged in -->
-                    <li class="nav-item">
-                        <a class="nav-link navbar-link" href="{{ url_for('login') }}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link navbar-link" href="{{ url_for('register') }}">Register</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body
+    class="bg-slate-50 dark:bg-[#03000a] text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col relative overflow-x-hidden selection:bg-violet-600 selection:text-white transition-colors duration-300">
 
-    <!-- Flash Messages Section -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Cinematic Background Image -->
+    <div class="absolute top-0 left-0 right-0 h-[700px] md:h-[800px] pointer-events-none z-0 overflow-hidden">
+        <!-- The actual image — full opacity so it's clearly visible -->
+        <div class="absolute inset-0 bg-[url('/static/bg.jpg')] bg-cover bg-center bg-no-repeat"></div>
+        <!-- Light mode: very light scrim so text is readable over bright image -->
+        <div class="absolute inset-0 bg-gradient-to-b from-white/20 via-slate-50/40 to-slate-50 dark:from-black/40 dark:via-[#03000a]/60 dark:to-[#03000a]"></div>
+    </div>
+
+    <!-- Radial Background blobs -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="mesh-blob mesh-blob-1 opacity-[0.06] dark:opacity-15"></div>
+        <div class="mesh-blob mesh-blob-2 opacity-[0.06] dark:opacity-15"></div>
+        <div class="mesh-blob mesh-blob-3 opacity-[0.06] dark:opacity-15"></div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header
+        class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-white/5 bg-white/70 dark:bg-[#03000a]/70 backdrop-blur-xl transition-colors duration-300">
+        <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="/"
+                    class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                    <div
+                        class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                    </div>
+                    <span>MovieFlix</span>
+                </a>
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()"
+                    class="h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-800 dark:text-slate-200 transition-all shadow-sm"
+                    title="Toggle Light/Dark Mode">
+                    <i id="theme-icon-light" class="fa-solid fa-moon text-sm dark:hidden"></i>
+                    <i id="theme-icon-dark"
+                        class="fa-solid fa-sun text-sm hidden dark:block text-amber-400 animate-spin-slow"></i>
+                </button>
+                <!-- Analytics Quick Access Button -->
+                <a href="/analytics" class="h-9 px-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 hover:opacity-95 text-white flex items-center gap-1.5 text-xs font-bold transition-all shadow-md shadow-violet-500/10 hover:shadow-violet-500/25 hover:-translate-y-0.5 active:translate-y-0 font-outfit" title="Interactive Analytics Dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+            <nav class="flex items-center gap-6">
+                <a href="/genres"
+                    class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Genres</a>
+                <a href="/popular_trending"
+                    class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Popular
+                    & Trending</a>
+                <a href="/analytics"
+                    class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Analytics</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% set messages = get_flashed_messages(request) %}
     {% if messages %}
-    <div class="alert-container">
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="fixed top-24 right-6 z-50 flex flex-col gap-3 w-80">
+        {% for msg in messages %}
+        <div class="p-4 rounded-2xl shadow-2xl border backdrop-blur-xl transition-all duration-500 ease-out translate-x-0 opacity-100 flash-message {% if msg.category == 'success' %}bg-white/95 dark:bg-slate-950/80 border-emerald-500/30 text-emerald-600 dark:text-emerald-300 shadow-emerald-950/10{% else %}bg-white/95 dark:bg-slate-950/80 border-rose-500/30 text-rose-600 dark:text-rose-300 shadow-rose-950/10{% endif %}"
+            role="alert">
+            <div class="flex justify-between items-center gap-3">
+                <p class="font-medium text-xs flex items-center gap-2 font-sans">
+                    <i
+                        class="fa-solid {% if msg.category == 'success' %}fa-circle-check text-emerald-500{% else %}fa-circle-exclamation text-rose-500{% endif %}"></i>
+                    {{ msg.message }}
+                </p>
+                <button onclick="this.parentElement.parentElement.remove()"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
         </div>
         {% endfor %}
     </div>
     {% endif %}
-    {% endwith %}
 
     <!-- Main Content -->
-    <div class="main-container">
-        <h1 class="main-title">Welcome to MovieFlix!</h1>
-        <p class="main-paragraph">Discover movies by genres, search by title, and more. Start your journey today!</p>
+    <main class="flex-1 flex flex-col items-center px-6 py-8 z-10 space-y-10">
+        <div class="max-w-6xl w-full p-6 md:p-8 rounded-3xl border border-white/30 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-lg shadow-2xl dark:shadow-slate-950/30 flex flex-col lg:flex-row items-center gap-8 justify-between">
+            <!-- Left Side: Headline & description -->
+            <div class="flex-1 space-y-4 text-left">
+                <!-- Hero Badge -->
+                <div
+                    class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full border border-violet-500/30 dark:border-violet-500/40 bg-violet-600/10 dark:bg-violet-500/10 text-[10px] font-bold tracking-wider text-violet-700 dark:text-violet-300 uppercase font-outfit shadow-sm">
+                    <span class="flex h-1.5 w-1.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-500"></span>
+                    </span>
+                    <span>Cinematic Discovery App</span>
+                </div>
+                <h1 class="text-2xl md:text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight font-outfit drop-shadow-sm">
+                    Your Gateway to <br class="hidden md:inline">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400">
+                        Cinematic Wonders
+                    </span>
+                </h1>
+                <p class="text-xs md:text-sm text-slate-700 dark:text-slate-200 max-w-xl font-medium leading-relaxed drop-shadow-sm">
+                    Explore rating charts, filter movies by custom genres, check popular box office trends, and submit your own ratings and reviews anonymously.
+                </p>
+            </div>
 
-        <!-- Search Section -->
-        <div class="search-container">
-            <form method="GET" action="{{ url_for('search') }}" class="search-box">
-                <input type="text" name="query" class="form-control search-input" placeholder="Search for a movie..."
-                    required>
-                <button type="submit" class="search-button">Search<i class="fas fa-search search-icon"></i></button>
-            </form>
+            <!-- Right Side: Search and CTAs -->
+            <div class="w-full lg:w-auto lg:min-w-[450px] space-y-4">
+                <!-- Search Container -->
+                <div class="p-1.5 rounded-2xl border border-white/50 dark:border-white/10 bg-white/60 dark:bg-black/30 backdrop-blur-sm focus-within:border-violet-500/50 dark:focus-within:border-violet-500/50 focus-within:shadow-[0_0_30px_rgba(139,92,246,0.15)] transition-all duration-300 shadow-sm">
+                    <form method="GET" action="/search" class="flex flex-col sm:flex-row gap-1.5">
+                        <div class="flex-1 flex items-center px-3 gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 dark:text-slate-500 text-xs"></i>
+                            <input type="text" name="query" placeholder="Search by title, director, actor..." required
+                                class="w-full py-2 bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none">
+                        </div>
+                        <button type="submit"
+                            class="sm:px-6 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-xs shadow-md shadow-violet-600/20 active:scale-[0.98] transition-all duration-200">
+                            Search Movies
+                        </button>
+                    </form>
+                </div>
+                <!-- Call to Actions -->
+                <div class="flex gap-4">
+                    <a href="/genres"
+                        class="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:border-slate-300 dark:hover:border-white/10 font-bold text-xs text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-2 group shadow-sm">
+                        <i class="fa-solid fa-tags text-violet-600 dark:text-violet-400 group-hover:rotate-12 transition-transform"></i>
+                        <span>Browse Genres</span>
+                    </a>
+                    <a href="/popular_trending"
+                        class="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:border-slate-300 dark:hover:border-white/10 font-bold text-xs text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-2 group shadow-sm">
+                        <i class="fa-solid fa-fire-flame-curved text-fuchsia-600 dark:text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
+                        <span>Popular & Trending</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="button-container filter_movies">
-            <a href="{{ url_for('index') }}" class="button action-button genre">Select Genres</a>
-            <a href="{{ url_for('popular_trending') }}" class="button action-button">Popular & Trending Movies</a>
+        <!-- Latest Movies Section -->
+        <div class="container mx-auto max-w-7xl w-full space-y-6 pt-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="space-y-2">
+                    <!-- Section Badge -->
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-600/10 dark:bg-violet-500/10 text-[10px] font-extrabold uppercase tracking-widest text-violet-700 dark:text-violet-300 font-outfit">
+                        <i class="fa-solid fa-sparkles text-[9px]"></i>
+                        <span>New Releases</span>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">
+                        Latest Releases & Discoveries
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-light">
+                        Explore recent additions and top-rated movies sorted by release date.
+                    </p>
+                </div>
+                <a href="/genres"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.08] text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm group self-start md:self-auto">
+                    <span>View All Movies</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for movie in latest_movies %}
+                <div
+                    class="group relative flex flex-col justify-between rounded-3xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.01] backdrop-blur-xl p-4 transition-all duration-500 hover:-translate-y-1.5 hover:border-violet-500/20 dark:hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-600/5 overflow-hidden shadow-sm">
+                    <div>
+                        <!-- Image Container with Badges -->
+                        <div
+                            class="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-950 mb-4 border border-slate-200 dark:border-white/5 shadow-inner">
+                            <img src="{{ movie['Movie-Image-Url'] }}" alt="{{ movie['Title'] }}"
+                                class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                loading="lazy">
+                            <!-- Badges -->
+                            <div
+                                class="absolute top-3 left-3 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-[10px] font-extrabold text-slate-100 tracking-wide font-outfit shadow-lg uppercase">
+                                {{ movie['Year'] }}
+                            </div>
+                            <div
+                                class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-xs font-bold text-amber-400 font-outfit shadow-lg">
+                                <i class="fa-solid fa-star text-[10px]"></i>
+                                <span>{{ movie['Rating'] }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Header -->
+                        <h3 class="font-extrabold text-base text-slate-800 dark:text-white line-clamp-1 mb-1 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors font-outfit"
+                            title="{{ movie['Title'] }}">
+                            {{ movie['Title'] }}
+                        </h3>
+
+                        <!-- Genres -->
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            {% for g in movie['Genre'] %}
+                            <span
+                                class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-violet-500/5 dark:bg-violet-400/5 border border-violet-500/10 dark:border-violet-400/10 text-violet-600 dark:text-violet-300">
+                                {{ g }}
+                            </span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div
+                            class="grid grid-cols-1 gap-2 text-xs text-slate-500 mb-4 border-t border-slate-100 dark:border-white/5 pt-4 font-light">
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Director"><i
+                                        class="fa-solid fa-clapperboard w-4"></i></span>
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1"
+                                    title="{{ movie['Director'] }}">{{ movie['Director'] }}</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between gap-2 border-t border-dashed border-slate-100 dark:border-white/5 pt-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Votes"><i
+                                            class="fa-solid fa-fire w-4"></i></span>
+                                    <span class="text-slate-600 dark:text-slate-400 font-outfit">{{
+                                        "{:,}".format(movie['Votes']|int) }} votes</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Revenue"><i
+                                            class="fa-solid fa-wallet w-4 text-emerald-500"></i></span>
+                                    <span class="text-emerald-600 dark:text-emerald-400 font-bold font-outfit">${{
+                                        movie['Revenue (Millions)'] }}M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="mt-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                        <button type="button" onclick="toggleReviews(this)"
+                            class="w-full flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors py-2.5 px-3 rounded-2xl bg-violet-600/5 hover:bg-violet-600/10 border border-violet-500/10 hover:border-violet-500/25">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-xs"></i>
+                                <span>Reviews & Feedback</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300"></i>
+                        </button>
+
+                        <div class="hidden review-pane mt-3 space-y-4">
+                            <div class="space-y-2.5 max-h-36 overflow-y-auto pr-1 review-scroll">
+                                {% if movie['Title'] in movie_reviews %}
+                                {% for review_id, r_data in movie_reviews[movie['Title']].items() %}
+                                <div
+                                    class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 text-[11px] leading-relaxed relative group/review">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        {% set reviewer = r_data.get('username', 'Anonymous') %}
+                                        <div
+                                            class="h-6 w-6 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-[9px] font-bold text-violet-600 dark:text-violet-300 uppercase">
+                                            {{ reviewer[0] if reviewer else 'A' }}
+                                        </div>
+                                        <div class="flex-1 flex items-center justify-between">
+                                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ reviewer
+                                                }}</span>
+                                            <span class="text-amber-400 flex items-center gap-0.5 text-[8px]">
+                                                {% for i in range(5) %}
+                                                <i
+                                                    class="fa-solid fa-star {% if i < r_data['rating'] %}text-amber-400{% else %}text-slate-300 dark:text-slate-800{% endif %}"></i>
+                                                {% endfor %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-600 dark:text-slate-400 font-light pl-8">{{ r_data['review'] }}
+                                    </p>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <p class="text-xs text-slate-600 italic py-2 px-1 text-center font-sans">No reviews yet.
+                                    Leave the first one!</p>
+                                {% endif %}
+                            </div>
+
+                            <form method="POST" action="/submit_review"
+                                class="space-y-3 border-t border-slate-100 dark:border-white/5 pt-3">
+                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Your
+                                        Rating:</span>
+                                    <div class="flex items-center star-rating-group">
+                                        {% for idx in range(1, 6) %}
+                                        <button type="button" onclick="rateMovie(this, {{ idx }})"
+                                            class="text-xs text-slate-400 dark:text-slate-700 hover:scale-120 hover:text-amber-400 transition-all px-0.5">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
+                                        {% endfor %}
+                                    </div>
+                                    <input type="hidden" name="rating" value="0" required class="rating-input">
+                                </div>
+
+                                <input type="text" name="username" placeholder="Your Name (Optional)"
+                                    class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors">
+
+                                <textarea name="review" rows="2" required placeholder="Write your thoughts..."
+                                    class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors resize-none"></textarea>
+
+                                <button type="submit"
+                                    class="w-full py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-xs transition-colors shadow-md shadow-violet-600/10">
+                                    Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div
+                class="flex items-center justify-center gap-4 mt-16 pt-8 border-t border-slate-200 dark:border-white/5">
+                {% if pagination.prev_page %}
+                <a href="/?page={{ pagination.prev_page }}"
+                    class="px-4 py-2 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/[0.02] hover:bg-slate-200 dark:hover:bg-white/[0.06] text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm">
+                    <i class="fa-solid fa-chevron-left mr-1.5"></i> Previous
+                </a>
+                {% endif %}
+
+                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                    Page <span class="text-slate-800 dark:text-slate-300 font-bold">{{ pagination.current_page }}</span>
+                    of <span class="text-slate-800 dark:text-slate-300 font-bold">{{ pagination.total_pages }}</span>
+                </span>
+
+                {% if pagination.next_page %}
+                <a href="/?page={{ pagination.next_page }}"
+                    class="px-4 py-2 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/[0.02] hover:bg-slate-200 dark:hover:bg-white/[0.06] text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm">
+                    Next <i class="fa-solid fa-chevron-right mr-1.5"></i>
+                </a>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p class="footer-text">&copy; 2024 MovieFlix. All rights reserved. | <a href="#" class="footer-link">Privacy
-                Policy</a></p>
+    <footer
+        class="border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-[#03000a]/90 backdrop-blur-xl pt-12 pb-0 mt-12 z-10 transition-colors duration-300 font-sans">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-6">
+                <!-- Column 1: Brand -->
+                <div class="space-y-4 md:col-span-1">
+                    <a href="/"
+                        class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                        <div
+                            class="h-8 w-8 rounded-lg bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                        <span>MovieFlix</span>
+                    </a>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Discover the world of cinema. Check top reviews, explore box office analytics, and share your
+                        feedback anonymously.
+                    </p>
+                    <div class="flex items-center gap-4 pt-2">
+                        <a href="#"
+                            class="text-slate-400 hover:text-violet-500 dark:hover:text-violet-400 transition-colors"
+                            title="Twitter">
+                            <i class="fa-brands fa-twitter text-sm"></i>
+                        </a>
+                        <a href="#"
+                            class="text-slate-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors"
+                            title="Discord">
+                            <i class="fa-brands fa-discord text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+                            title="GitHub">
+                            <i class="fa-brands fa-github text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                            title="YouTube">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Explore -->
+                <div class="space-y-4">
+                    <h4
+                        class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">
+                        Explore</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li><a href="/genres"
+                                class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Browse
+                                Genres</a></li>
+                        <li><a href="/popular_trending"
+                                class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Popular &
+                                Trending</a></li>
+                        <li><a href="/"
+                                class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Latest
+                                Discoveries</a></li>
+                        <li><a href="/search"
+                                class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Search
+                                Library</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Stats -->
+                <div class="space-y-4">
+                    <h4
+                        class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">
+                        MovieFlix Stats</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li class="flex items-center justify-between">
+                            <span>Catalog Size</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">950+ Movies</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>New Additions</span>
+                            <span class="font-bold text-violet-600 dark:text-violet-400 font-outfit">2026
+                                Releases</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Rating Source</span>
+                            <span class="font-bold text-amber-500 font-outfit">IMDb & OMDb</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Platform</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">Anonymous
+                                Reviews</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Newsletter/Quick Action -->
+                <div class="space-y-4">
+                    <h4
+                        class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">
+                        Discover Movies</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Quickly find your next watch by searching titles or checking trending box office hits.
+                    </p>
+                    <a href="/popular_trending"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold text-xs shadow-lg shadow-violet-600/10 hover:opacity-90 transition-opacity active:scale-[0.98]">
+                        <i class="fa-solid fa-fire text-[10px]"></i>
+                        <span>Check Box Office Hits</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bottom Line -->
+            <div
+                class="py-3 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-500">
+                <p>&copy; 2026 MovieFlix. All rights reserved. Powered by Kaggle IMDb Datasets.</p>
+                <div class="flex items-center gap-6">
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Terms of
+                        Service</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-
-    <!-- JavaScript to Auto-dismiss the alert after 3 seconds -->
+    <!-- Theme Control Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function (alert) {
-                setTimeout(function () {
-                    alert.classList.remove('show');
-                    alert.classList.add('fade');
-                }, 500);
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function toggleReviews(btn) {
+            const pane = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            pane.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        function rateMovie(starBtn, rating) {
+            const group = starBtn.closest('.star-rating-group');
+            const form = starBtn.closest('form');
+            const input = form.querySelector('.rating-input');
+            input.value = rating;
+
+            const stars = group.querySelectorAll('button');
+            stars.forEach((star, idx) => {
+                const i = star.querySelector('i');
+                if (idx < rating) {
+                    i.className = 'fa-solid fa-star text-amber-400';
+                } else {
+                    i.className = 'fa-solid fa-star text-slate-300 dark:text-slate-700';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.flash-message');
+            alerts.forEach((alert) => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateX(50px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 4000);
             });
         });
     </script>

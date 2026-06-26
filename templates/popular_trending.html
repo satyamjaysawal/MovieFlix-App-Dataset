@@ -1,492 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popular & Trending Movies</title>
-    <!-- Bootstrap for better styling (optional) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <title>Popular & Trending - MovieFlix</title>
+    <!-- Theme Switcher Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #eaeaea;
-            margin: 0;
-            background-image: url('https://github.com/user-attachments/assets/da4c38ab-265b-4af1-b961-2204f2eb291c');
-            background-size: cover;
-            background-position: center center;
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(150px);
+            z-index: 0;
+            pointer-events: none;
         }
-
-        /* Navbar Styles */
-        .navbar {
-            background-color: #1f1f1f;
-            padding: 0.8rem 1rem;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-            background: rgba(65, 70, 75, 0.3);
+        .mesh-blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+            top: 20%;
+            right: -10%;
         }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #00d1b2;
+        .mesh-blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+            bottom: 10%;
+            left: -10%;
         }
-
-        .navbar-brand i {
-            color: #00bfa6;
-            margin-right: 6px;
+        .review-scroll::-webkit-scrollbar {
+            width: 4px;
         }
-
-        .navbar-brand:hover {
-            color: #00b09b;
+        .review-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
         }
-
-        .btn-outline-light {
-            font-size: 0.85rem;
-            padding: 0.25rem 0.75rem;
-            transition: background-color 0.3s, color 0.3s;
+        .dark .review-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
         }
-
-        .btn-outline-light:hover {
-            background-color: #00d1b2;
-            color: #ffffff;
+        .review-scroll::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
         }
-
-        /* Main Content & Movie Grid */
-        main {
-            padding: 2rem;
-            background-color: rgba(0, 0, 0, 0.7);
-            margin-top: 1rem;
-        }
-
-        h1, h2 {
-            color: #00d1b2;
-            margin-bottom: 1rem;
-        }
-
-        .movies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-
-        .movie-card {
-            background: #222;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            padding: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .movie-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-
-        .movie-poster {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .movie-card h3 {
-            font-size: 1rem;
-            color: #00d1b2;
-            margin: 0.5rem 0;
-        }
-
-        .movie-card p {
-            font-size: 0.85rem;
-            margin: 0.25rem 0;
-        }
-
-        .movie-card strong {
-            color: #00d1b2;
-        }
-
-        /* Review Section */
-        .review-section {
-            padding: 0.75rem;
-            margin-top: 1rem;
-            background: #1a1a1a;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .review-section:hover {
-            transform: scale(1.01);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-        }
-
-        .toggle-review {
-            display: flex;
-            align-items: center;
-            background: #333;
-            color: #00d1b2;
-            border: 2px solid #00d1b2;
-            border-radius: 8px;
-            cursor: pointer;
-            padding: 0.5rem 0.8rem;
-            font-size: smaller;
-            transition: all 0.3s;
-        }
-
-        .toggle-review:hover {
-            background: #00d1b2;
-            color: #ffffff;
-        }
-
-        .star-rating {
-            display: flex;
-            gap: 0.3rem;
-            font-size: 1.3rem;
-            margin-top: 0.5rem;
-        }
-
-        .star {
-            cursor: pointer;
-            color: #555;
-            transition: color 0.3s, transform 0.2s;
-        }
-
-        .star.filled {
-            color: #FFD700;
-        }
-
-        .star:hover {
-            transform: scale(1.1);
-            color: #FFD700;
-        }
-
-        /* Form Styles */
-        .review-section form {
-            margin-top: 0.5rem;
-        }
-
-        .review-section label {
-            font-weight: bold;
-            color: #cccccc;
-            margin-bottom: 0.4rem;
-        }
-
-        .review-section textarea {
-            width: 100%;
-            background: #333;
-            border: 2px solid #444;
-            border-radius: 8px;
-            color: #eaeaea;
-            margin-bottom: 0.5rem;
-            transition: border-color 0.3s;
-        }
-
-        .review-section textarea:focus {
-            border-color: #00d1b2;
-            outline: none;
-        }
-
-        .icon-button,
-        .review-section button[type="submit"] {
-            background: #00d1b2;
-            border: none;
-            color: white;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: smaller;
-            transition: background 0.3s, transform 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .icon-button.delete-icon {
-            background-color: #e74c3c;
-        }
-
-        .icon-button:hover,
-        .review-section button[type="submit"]:hover {
-            background-color: #00a591;
-            transform: scale(1.05);
-        }
-
-        .icon-button.delete-icon:hover {
-            background-color: #c0392b;
-        }
-
-        /* Review Content */
-        .review-content {
-            margin-top: 0.5rem;
-            background: #282828;
-            padding: 0.8rem;
-            border-radius: 8px;
-            display: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .review-content p {
-            color: #bbbbbb;
-        }
-
-
-        /* Footer Styles */
-        footer {
-            text-align: center;
-            padding: 1rem 0;
-            background-color: #1f1f1f;
-            color: #a0a0a0;
-            margin-top: 2rem;
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 768px) {
-            main {
-                padding: 1rem;
-            }
-
-            .navbar {
-                padding: 0.5rem 1rem;
-            }
+        .review-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.6);
         }
     </style>
 </head>
+<body class="bg-slate-50 dark:bg-[#03000a] text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col relative overflow-x-hidden selection:bg-violet-600 selection:text-white transition-colors duration-300">
 
-<body>
-    <!-- Navbar Section -->
-    <nav class="navbar navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">
-                <i class="fas fa-film"></i> MovieFlix
-            </a>
-            <div class="navbar-links">
-                <a href="{{ url_for('home') }}" class="btn btn-outline-light">Return to Home</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="mesh-blob mesh-blob-1 opacity-[0.04] dark:opacity-10"></div>
+        <div class="mesh-blob mesh-blob-2 opacity-[0.04] dark:opacity-10"></div>
+    </div>
+
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-white/5 bg-white/70 dark:bg-[#03000a]/70 backdrop-blur-xl transition-colors duration-300">
+        <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="/" class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                    <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                    </div>
+                    <span>MovieFlix</span>
+                </a>
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-800 dark:text-slate-200 transition-all shadow-sm" title="Toggle Light/Dark Mode">
+                    <i id="theme-icon-light" class="fa-solid fa-moon text-sm dark:hidden"></i>
+                    <i id="theme-icon-dark" class="fa-solid fa-sun text-sm hidden dark:block text-amber-400 animate-spin-slow"></i>
+                </button>
+                <!-- Analytics Quick Access Button -->
+                <a href="/analytics" class="h-9 px-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 hover:opacity-95 text-white flex items-center gap-1.5 text-xs font-bold transition-all shadow-md shadow-violet-500/10 hover:shadow-violet-500/25 hover:-translate-y-0.5 active:translate-y-0 font-outfit" title="Interactive Analytics Dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+
+            <nav class="flex items-center gap-6">
+                <a href="/genres" class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Genres</a>
+                <a href="/popular_trending" class="text-xs font-bold text-slate-900 dark:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-full after:h-[2px] after:bg-violet-500">Popular & Trending</a>
+                <a href="/analytics" class="text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors relative after:content-[''] after:absolute after:bottom-[-21px] after:left-0 after:w-0 after:h-[2px] after:bg-violet-500 hover:after:w-full after:transition-all">Analytics</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% set messages = get_flashed_messages(request) %}
+    {% if messages %}
+    <div class="fixed top-24 right-6 z-50 flex flex-col gap-3 w-80">
+        {% for msg in messages %}
+        <div class="p-4 rounded-2xl shadow-2xl border backdrop-blur-xl transition-all duration-500 ease-out translate-x-0 opacity-100 flash-message {% if msg.category == 'success' %}bg-white/95 dark:bg-slate-950/80 border-emerald-500/30 text-emerald-600 dark:text-emerald-300 shadow-emerald-950/10{% else %}bg-white/95 dark:bg-slate-950/80 border-rose-500/30 text-rose-600 dark:text-rose-300 shadow-rose-950/10{% endif %}" role="alert">
+            <div class="flex justify-between items-center gap-3">
+                <p class="font-medium text-xs flex items-center gap-2">
+                    <i class="fa-solid {% if msg.category == 'success' %}fa-circle-check text-emerald-500{% else %}fa-circle-exclamation text-rose-500{% endif %}"></i>
+                    {{ msg.message }}
+                </p>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
             </div>
         </div>
-    </nav>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-    <main>
-        <!-- Top 10 Movies by Votes -->
-        <section>
-            <h1>Popular & Trending Movies</h1>
-            <h2>Top 10 Movies by Votes</h2>
-            <div class="movies-grid">
-                {% for movie in top_rated_movies.iterrows() %}
-                <div class="movie-card">
-                    <img src="{{ movie[1]['Movie-Image-Url'] }}" alt="{{ movie[1]['Title'] }}" class="movie-poster">
-                    <h3>{{ movie[1]['Title'] }}</h3>
-                    <p><strong>Genre:</strong> {{ movie[1]['Genre'] }}</p>
-                    <p><strong>Director:</strong> {{ movie[1]['Director'] }}</p>
-                    <p><strong>Year:</strong> {{ movie[1]['Year'] }}</p>
-                    <p><strong>Rating:</strong> {{ movie[1]['Rating'] }}</p>
-                    <p><strong>Votes:</strong> {{ movie[1]['Votes'] }}</p>
-                    <p><strong>Revenue:</strong> ${{ movie[1]['Revenue (Millions)'] }}M</p>
-                    <!-- Review Section -->
-                    <div class="review-section">
-                        <button type="button" class="toggle-review" onclick="toggleReviewSection(this)">
-                            Show Review +
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-6 py-10 flex flex-col gap-8 z-10 font-sans">
+        
+        <!-- Headline -->
+        <div class="space-y-2">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-outfit">Popular & Trending Movies</h1>
+            <p class="text-sm text-slate-600 dark:text-slate-400 font-light">Explore top-rated releases by review votes or inspect the box office leaders in gross revenue.</p>
+        </div>
+
+        <!-- Tab control -->
+        <div class="flex items-center gap-3 border-b border-slate-200 dark:border-white/5 pb-4">
+            <button onclick="switchTab('votes')" id="tab-btn-votes" class="px-5 py-3 text-xs font-bold rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white transition-all duration-300 flex items-center gap-2 shadow-lg shadow-violet-500/10 active:scale-95">
+                <i class="fa-solid fa-fire-flame-curved text-amber-400 text-sm"></i>
+                <span>Top Rated (by Votes)</span>
+            </button>
+            <button onclick="switchTab('revenue')" id="tab-btn-revenue" class="px-5 py-3 text-xs font-bold rounded-2xl bg-slate-200/50 dark:bg-white/[0.02] border border-slate-300 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-800 hover:border-slate-400 dark:hover:text-slate-200 dark:hover:border-white/10 transition-all duration-300 flex items-center gap-2 active:scale-95">
+                <i class="fa-solid fa-coins text-emerald-500 dark:text-emerald-400 text-sm"></i>
+                <span>Top Grossing (Revenue)</span>
+            </button>
+        </div>
+
+        <!-- Pane 1: Top Votes -->
+        <div id="pane-votes" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for movie in top_rated_movies %}
+                <div class="group relative flex flex-col justify-between rounded-3xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.01] backdrop-blur-xl p-4 transition-all duration-500 hover:-translate-y-1.5 hover:border-violet-500/20 dark:hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-600/5 overflow-hidden shadow-sm">
+                    <div>
+                        <!-- Image Container with Badges -->
+                        <div class="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-950 mb-4 border border-slate-200 dark:border-white/5 shadow-inner">
+                            <img src="{{ movie['Movie-Image-Url'] }}" alt="{{ movie['Title'] }}" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" loading="lazy">
+                            <!-- Badges -->
+                            <div class="absolute top-3 left-3 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-[10px] font-extrabold text-slate-100 tracking-wide font-outfit shadow-lg uppercase">
+                                {{ movie['Year'] }}
+                            </div>
+                            <div class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-xs font-bold text-amber-400 font-outfit shadow-lg">
+                                <i class="fa-solid fa-star text-[10px]"></i>
+                                <span>{{ movie['Rating'] }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Header -->
+                        <h3 class="font-extrabold text-base text-slate-800 dark:text-white line-clamp-1 mb-1 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors font-outfit" title="{{ movie['Title'] }}">
+                            {{ movie['Title'] }}
+                        </h3>
+
+                        <!-- Genres -->
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            {% for g in movie['Genre'] %}
+                            <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-violet-500/5 dark:bg-violet-400/5 border border-violet-500/10 dark:border-violet-400/10 text-violet-600 dark:text-violet-300">
+                                {{ g }}
+                            </span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-1 gap-2 text-xs text-slate-500 mb-4 border-t border-slate-100 dark:border-white/5 pt-4 font-light">
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Director"><i class="fa-solid fa-clapperboard w-4"></i></span>
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1" title="{{ movie['Director'] }}">{{ movie['Director'] }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 border-t border-dashed border-slate-100 dark:border-white/5 pt-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Votes"><i class="fa-solid fa-fire w-4"></i></span>
+                                    <span class="text-slate-600 dark:text-slate-400 font-outfit">{{ "{:,}".format(movie['Votes']|int) }} votes</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Revenue"><i class="fa-solid fa-wallet w-4 text-emerald-500"></i></span>
+                                    <span class="text-emerald-600 dark:text-emerald-400 font-bold font-outfit">${{ movie['Revenue (Millions)'] }}M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="mt-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                        <button type="button" onclick="toggleReviews(this)" class="w-full flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors py-2.5 px-3 rounded-2xl bg-violet-600/5 hover:bg-violet-600/10 border border-violet-500/10 hover:border-violet-500/25">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-xs"></i>
+                                <span>Reviews & Feedback</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300"></i>
                         </button>
-        
-                        <div class="review-content" style="display: none;">
-                            {% if movie['Title'] in movie_reviews and current_user.id in movie_reviews[movie['Title']] %}
-                            <div>
-                                <p><strong>Your Review:</strong></p>
-                                <p>
-                                    <strong>Rating: </strong>
-                                    <span class="star-rating">
-                                        {% for i in range(5) %}
-                                        {% if i < movie_reviews[movie['Title']][current_user.id]['rating'] %}
-                                        <span class="star filled">&#9733;</span>
-                                        {% else %}
-                                        <span class="star">&#9734;</span>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </span>
-                                </p>
-                                <p>Review: {{ movie_reviews[movie['Title']][current_user.id]['review'] }}</p>
-        
-                                <!-- Edit Review Form -->
-                                <form method="POST" action="{{ url_for('edit_review') }}">
-                                    <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                                    <div class="star-rating">
-                                        {% for i in range(5) %}
-                                        <span class="star" data-index="{{ i + 1 }}"
-                                            onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
+
+                        <div class="hidden review-pane mt-3 space-y-4">
+                            <div class="space-y-2.5 max-h-36 overflow-y-auto pr-1 review-scroll">
+                                {% if movie['Title'] in movie_reviews %}
+                                    {% for review_id, r_data in movie_reviews[movie['Title']].items() %}
+                                    <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 text-[11px] leading-relaxed relative group/review">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            {% set reviewer = r_data.get('username', 'Anonymous') %}
+                                            <div class="h-6 w-6 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-[9px] font-bold text-violet-600 dark:text-violet-300 uppercase">
+                                                {{ reviewer[0] if reviewer else 'A' }}
+                                            </div>
+                                            <div class="flex-1 flex items-center justify-between">
+                                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ reviewer }}</span>
+                                                <span class="text-amber-400 flex items-center gap-0.5 text-[8px]">
+                                                    {% for i in range(5) %}
+                                                    <i class="fa-solid fa-star {% if i < r_data['rating'] %}text-amber-400{% else %}text-slate-300 dark:text-slate-800{% endif %}"></i>
+                                                    {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <p class="text-slate-600 dark:text-slate-400 font-light pl-8">{{ r_data['review'] }}</p>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-xs text-slate-600 italic py-2 px-1 text-center font-sans">No reviews yet. Leave the first one!</p>
+                                {% endif %}
+                            </div>
+
+                            <form method="POST" action="/submit_review" class="space-y-3 border-t border-slate-100 dark:border-white/5 pt-3">
+                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Your Rating:</span>
+                                    <div class="flex items-center star-rating-group">
+                                        {% for idx in range(1, 6) %}
+                                        <button type="button" onclick="rateMovie(this, {{ idx }})" class="text-xs text-slate-400 dark:text-slate-700 hover:scale-120 hover:text-amber-400 transition-all px-0.5">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
                                         {% endfor %}
                                     </div>
-                                    <input type="hidden" name="rating" id="rating-{{ loop.index }}"
-                                        value="{{ movie_reviews[movie['Title']][current_user.id]['rating'] }}">
-                                    <label for="edit-review-{{ loop.index }}">Edit Review:</label>
-                                    <textarea name="review" id="edit-review-{{ loop.index }}"
-                                        rows="2">{{ movie_reviews[movie['Title']][current_user.id]['review'] }}</textarea>
-                                    <button type="submit" title="Update Review" class="icon-button">Update Review
-                                        <i class="fas fa-save"></i>
-                                    </button>
-                                </form>
-        
-                                <!-- Delete Review Form -->
-                                <form action="{{ url_for('delete_review') }}" method="POST">
-                                    <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                                    <button type="submit" title="Delete Review" class="icon-button delete-icon">Delete
-                                        Review
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </div>
-                            {% else %}
-                            <!-- New Review Form -->
-                            <form method="POST" action="{{ url_for('submit_review') }}">
-                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                                <div class="star-rating">
-                                    {% for i in range(5) %}
-                                    <span class="star" data-index="{{ i + 1 }}"
-                                        onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
-                                    {% endfor %}
+                                    <input type="hidden" name="rating" value="0" required class="rating-input">
                                 </div>
-                                <input type="hidden" name="rating" id="rating-{{ loop.index }}" value="0">
-                                <label for="review-{{ loop.index }}">Review:</label>
-                                <textarea name="review" id="review-{{ loop.index }}" rows="2"></textarea>
-                                <button type="submit">Submit Review</button>
+
+                                <input type="text" name="username" placeholder="Your Name (Optional)" 
+                                       class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors">
+
+                                <textarea name="review" rows="2" required placeholder="Write your thoughts..." 
+                                          class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors resize-none"></textarea>
+
+                                <button type="submit" class="w-full py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-xs transition-colors shadow-md shadow-violet-600/10">
+                                    Submit Review
+                                </button>
                             </form>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-        </section>
+        </div>
 
-        <!-- Top 10 Movies by Revenue -->
-        <section>
-            <h2>Top 10 Movies by Revenue</h2>
-            <div class="movies-grid">
-                {% for movie in top_revenue_movies.iterrows() %}
-                <div class="movie-card">
-                    <img src="{{ movie[1]['Movie-Image-Url'] }}" alt="{{ movie[1]['Title'] }}" class="movie-poster">
-                    <h3>{{ movie[1]['Title'] }}</h3>
-                    <p><strong>Genre:</strong> {{ movie[1]['Genre'] }}</p>
-                    <p><strong>Director:</strong> {{ movie[1]['Director'] }}</p>
-                    <p><strong>Year:</strong> {{ movie[1]['Year'] }}</p>
-                    <p><strong>Rating:</strong> {{ movie[1]['Rating'] }}</p>
-                    <p><strong>Votes:</strong> {{ movie[1]['Votes'] }}</p>
-                    <p><strong>Revenue:</strong> ${{ movie[1]['Revenue (Millions)'] }}M</p>
-                    <!-- Review Section -->
-                    <div class="review-section">
-                    <button type="button" class="toggle-review" onclick="toggleReviewSection(this)">
-                        Show Review +
-                    </button>
-    
-                    <div class="review-content" style="display: none;">
-                        {% if movie['Title'] in movie_reviews and current_user.id in movie_reviews[movie['Title']] %}
-                        <div>
-                            <p><strong>Your Review:</strong></p>
-                            <p>
-                                <strong>Rating: </strong>
-                                <span class="star-rating">
-                                    {% for i in range(5) %}
-                                    {% if i < movie_reviews[movie['Title']][current_user.id]['rating'] %}
-                                    <span class="star filled">&#9733;</span>
-                                    {% else %}
-                                    <span class="star">&#9734;</span>
-                                    {% endif %}
-                                    {% endfor %}
-                                </span>
-                            </p>
-                            <p>Review: {{ movie_reviews[movie['Title']][current_user.id]['review'] }}</p>
-    
-                            <!-- Edit Review Form -->
-                            <form method="POST" action="{{ url_for('edit_review') }}">
-                                <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                                <div class="star-rating">
-                                    {% for i in range(5) %}
-                                    <span class="star" data-index="{{ i + 1 }}"
-                                        onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
-                                    {% endfor %}
+        <!-- Pane 2: Top Revenue -->
+        <div id="pane-revenue" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for movie in top_revenue_movies %}
+                <div class="group relative flex flex-col justify-between rounded-3xl border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.01] backdrop-blur-xl p-4 transition-all duration-500 hover:-translate-y-1.5 hover:border-violet-500/20 dark:hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-600/5 overflow-hidden shadow-sm">
+                    <div>
+                        <!-- Image Container with Badges -->
+                        <div class="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-950 mb-4 border border-slate-200 dark:border-white/5 shadow-inner">
+                            <img src="{{ movie['Movie-Image-Url'] }}" alt="{{ movie['Title'] }}" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" loading="lazy">
+                            <!-- Badges -->
+                            <div class="absolute top-3 left-3 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-[10px] font-extrabold text-slate-100 tracking-wide font-outfit shadow-lg uppercase">
+                                {{ movie['Year'] }}
+                            </div>
+                            <div class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 text-xs font-bold text-amber-400 font-outfit shadow-lg">
+                                <i class="fa-solid fa-star text-[10px]"></i>
+                                <span>{{ movie['Rating'] }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Header -->
+                        <h3 class="font-extrabold text-base text-slate-800 dark:text-white line-clamp-1 mb-1 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors font-outfit" title="{{ movie['Title'] }}">
+                            {{ movie['Title'] }}
+                        </h3>
+
+                        <!-- Genres -->
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            {% for g in movie['Genre'] %}
+                            <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-violet-500/5 dark:bg-violet-400/5 border border-violet-500/10 dark:border-violet-400/10 text-violet-600 dark:text-violet-300">
+                                {{ g }}
+                            </span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-1 gap-2 text-xs text-slate-500 mb-4 border-t border-slate-100 dark:border-white/5 pt-4 font-light">
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Director"><i class="fa-solid fa-clapperboard w-4"></i></span>
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1" title="{{ movie['Director'] }}">{{ movie['Director'] }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 border-t border-dashed border-slate-100 dark:border-white/5 pt-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Votes"><i class="fa-solid fa-fire w-4"></i></span>
+                                    <span class="text-slate-600 dark:text-slate-400 font-outfit">{{ "{:,}".format(movie['Votes']|int) }} votes</span>
                                 </div>
-                                <input type="hidden" name="rating" id="rating-{{ loop.index }}"
-                                    value="{{ movie_reviews[movie['Title']][current_user.id]['rating'] }}">
-                                <label for="edit-review-{{ loop.index }}">Edit Review:</label>
-                                <textarea name="review" id="edit-review-{{ loop.index }}"
-                                    rows="2">{{ movie_reviews[movie['Title']][current_user.id]['review'] }}</textarea>
-                                <button type="submit" title="Update Review" class="icon-button">Update Review
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </form>
-    
-                            <!-- Delete Review Form -->
-                            <form action="{{ url_for('delete_review') }}" method="POST">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 dark:text-slate-500 text-[11px]" title="Revenue"><i class="fa-solid fa-wallet w-4 text-emerald-500"></i></span>
+                                    <span class="text-emerald-600 dark:text-emerald-400 font-bold font-outfit">${{ movie['Revenue (Millions)'] }}M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="mt-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                        <button type="button" onclick="toggleReviews(this)" class="w-full flex items-center justify-between text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors py-2.5 px-3 rounded-2xl bg-violet-600/5 hover:bg-violet-600/10 border border-violet-500/10 hover:border-violet-500/25">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-xs"></i>
+                                <span>Reviews & Feedback</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300"></i>
+                        </button>
+
+                        <div class="hidden review-pane mt-3 space-y-4">
+                            <div class="space-y-2.5 max-h-36 overflow-y-auto pr-1 review-scroll">
+                                {% if movie['Title'] in movie_reviews %}
+                                    {% for review_id, r_data in movie_reviews[movie['Title']].items() %}
+                                    <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-950/60 border border-slate-200 dark:border-white/5 text-[11px] leading-relaxed relative group/review">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            {% set reviewer = r_data.get('username', 'Anonymous') %}
+                                            <div class="h-6 w-6 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-[9px] font-bold text-violet-600 dark:text-violet-300 uppercase">
+                                                {{ reviewer[0] if reviewer else 'A' }}
+                                            </div>
+                                            <div class="flex-1 flex items-center justify-between">
+                                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ reviewer }}</span>
+                                                <span class="text-amber-400 flex items-center gap-0.5 text-[8px]">
+                                                    {% for i in range(5) %}
+                                                    <i class="fa-solid fa-star {% if i < r_data['rating'] %}text-amber-400{% else %}text-slate-300 dark:text-slate-800{% endif %}"></i>
+                                                    {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <p class="text-slate-600 dark:text-slate-400 font-light pl-8">{{ r_data['review'] }}</p>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-xs text-slate-600 italic py-2 px-1 text-center font-sans">No reviews yet. Leave the first one!</p>
+                                {% endif %}
+                            </div>
+
+                            <form method="POST" action="/submit_review" class="space-y-3 border-t border-slate-100 dark:border-white/5 pt-3">
                                 <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                                <button type="submit" title="Delete Review" class="icon-button delete-icon">Delete
-                                    Review
-                                    <i class="fas fa-trash-alt"></i>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Your Rating:</span>
+                                    <div class="flex items-center star-rating-group">
+                                        {% for idx in range(1, 6) %}
+                                        <button type="button" onclick="rateMovie(this, {{ idx }})" class="text-xs text-slate-400 dark:text-slate-700 hover:scale-120 hover:text-amber-400 transition-all px-0.5">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
+                                        {% endfor %}
+                                    </div>
+                                    <input type="hidden" name="rating" value="0" required class="rating-input">
+                                </div>
+
+                                <input type="text" name="username" placeholder="Your Name (Optional)" 
+                                       class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors">
+
+                                <textarea name="review" rows="2" required placeholder="Write your thoughts..." 
+                                          class="w-full p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/5 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-violet-500/30 transition-colors resize-none"></textarea>
+
+                                <button type="submit" class="w-full py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-xs transition-colors shadow-md shadow-violet-600/10">
+                                    Submit Review
                                 </button>
                             </form>
                         </div>
-                        {% else %}
-                        <!-- New Review Form -->
-                        <form method="POST" action="{{ url_for('submit_review') }}">
-                            <input type="hidden" name="movie_title" value="{{ movie['Title'] }}">
-                            <div class="star-rating">
-                                {% for i in range(5) %}
-                                <span class="star" data-index="{{ i + 1 }}"
-                                    onclick="setRating(event, {{ i + 1 }})">&#9734;</span>
-                                {% endfor %}
-                            </div>
-                            <input type="hidden" name="rating" id="rating-{{ loop.index }}" value="0">
-                            <label for="review-{{ loop.index }}">Review:</label>
-                            <textarea name="review" id="review-{{ loop.index }}" rows="2"></textarea>
-                            <button type="submit">Submit Review</button>
-                        </form>
-                        {% endif %}
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-            </div>
-        </section>
+        </div>
+
     </main>
 
-    <footer>
-        <p>&copy; 2024 Movie Review App</p>
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-[#03000a]/90 backdrop-blur-xl pt-12 pb-0 mt-12 z-10 transition-colors duration-300 font-sans">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-6">
+                <!-- Column 1: Brand -->
+                <div class="space-y-4 md:col-span-1">
+                    <a href="/" class="flex items-center gap-3 text-xl font-black tracking-tight font-outfit text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-400 hover:opacity-90 transition-opacity">
+                        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                        <span>MovieFlix</span>
+                    </a>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Discover the world of cinema. Check top reviews, explore box office analytics, and share your feedback anonymously.
+                    </p>
+                    <div class="flex items-center gap-4 pt-2">
+                        <a href="#" class="text-slate-400 hover:text-violet-500 dark:hover:text-violet-400 transition-colors" title="Twitter">
+                            <i class="fa-brands fa-twitter text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors" title="Discord">
+                            <i class="fa-brands fa-discord text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors" title="GitHub">
+                            <i class="fa-brands fa-github text-sm"></i>
+                        </a>
+                        <a href="#" class="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="YouTube">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Explore -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">Explore</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li><a href="/genres" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Browse Genres</a></li>
+                        <li><a href="/popular_trending" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Popular & Trending</a></li>
+                        <li><a href="/" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Latest Discoveries</a></li>
+                        <li><a href="/search" class="hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Search Library</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Stats -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">MovieFlix Stats</h4>
+                    <ul class="space-y-2 text-xs font-light text-slate-500 dark:text-slate-400">
+                        <li class="flex items-center justify-between">
+                            <span>Catalog Size</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">950+ Movies</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>New Additions</span>
+                            <span class="font-bold text-violet-600 dark:text-violet-400 font-outfit">2026 Releases</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Rating Source</span>
+                            <span class="font-bold text-amber-500 font-outfit">IMDb & OMDb</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Platform</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 font-outfit">Anonymous Reviews</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Newsletter/Quick Action -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-outfit">Discover Movies</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                        Quickly find your next watch by searching titles or checking trending box office hits.
+                    </p>
+                    <a href="/popular_trending" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold text-xs shadow-lg shadow-violet-600/10 hover:opacity-90 transition-opacity active:scale-[0.98]">
+                        <i class="fa-solid fa-fire text-[10px]"></i>
+                        <span>Check Box Office Hits</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bottom Line -->
+            <div class="py-3 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-500">
+                <p>&copy; 2026 MovieFlix. All rights reserved. Powered by Kaggle IMDb Datasets.</p>
+                <div class="flex items-center gap-6">
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800 dark:hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
+    <!-- Interactive script components -->
     <script>
-        function toggleReviewSection(button) {
-            const reviewContent = button.nextElementSibling;
-            if (reviewContent.style.display === "none") {
-                reviewContent.style.display = "block";
-                button.textContent = "Hide Review -";
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
             } else {
-                reviewContent.style.display = "none";
-                button.textContent = "Show Review +";
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
             }
         }
 
-        function setRating(event, rating) {
-            const stars = event.target.parentElement.children;
-            const ratingInput = event.target.closest('form').querySelector('input[name="rating"]');
-            // Set the rating value
-            ratingInput.value = rating;
+        function switchTab(tab) {
+            const votesPane = document.getElementById('pane-votes');
+            const revenuePane = document.getElementById('pane-revenue');
+            const votesBtn = document.getElementById('tab-btn-votes');
+            const revenueBtn = document.getElementById('tab-btn-revenue');
 
-            // Set the filled stars
-            for (let i = 0; i < stars.length; i++) {
-                if (i < rating) {
-                    stars[i].classList.add('filled');
+            if (tab === 'votes') {
+                votesPane.classList.remove('hidden');
+                revenuePane.classList.add('hidden');
+                
+                votesBtn.className = "px-5 py-3 text-xs font-bold rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white transition-all duration-300 flex items-center gap-2 shadow-lg shadow-violet-500/10 active:scale-95";
+                revenueBtn.className = "px-5 py-3 text-xs font-bold rounded-2xl bg-slate-200/50 dark:bg-white/[0.02] border border-slate-300 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-800 hover:border-slate-400 dark:hover:text-slate-200 dark:hover:border-white/10 transition-all duration-300 flex items-center gap-2 active:scale-95";
+            } else {
+                votesPane.classList.add('hidden');
+                revenuePane.classList.remove('hidden');
+                
+                votesBtn.className = "px-5 py-3 text-xs font-bold rounded-2xl bg-slate-200/50 dark:bg-white/[0.02] border border-slate-300 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-800 hover:border-slate-400 dark:hover:text-slate-200 dark:hover:border-white/10 transition-all duration-300 flex items-center gap-2 active:scale-95";
+                revenueBtn.className = "px-5 py-3 text-xs font-bold rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white transition-all duration-300 flex items-center gap-2 shadow-lg shadow-violet-500/10 active:scale-95";
+            }
+        }
+
+        function toggleReviews(btn) {
+            const pane = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            pane.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        function rateMovie(starBtn, rating) {
+            const group = starBtn.closest('.star-rating-group');
+            const form = starBtn.closest('form');
+            const input = form.querySelector('.rating-input');
+            input.value = rating;
+
+            const stars = group.querySelectorAll('button');
+            stars.forEach((star, idx) => {
+                const i = star.querySelector('i');
+                if (idx < rating) {
+                    i.className = 'fa-solid fa-star text-amber-400';
                 } else {
-                    stars[i].classList.remove('filled');
+                    i.className = 'fa-solid fa-star text-slate-300 dark:text-slate-700';
                 }
-            }
+            });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.flash-message');
+            alerts.forEach((alert) => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateX(50px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 4000);
+            });
+        });
     </script>
-
 </body>
-
 </html>
