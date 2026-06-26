@@ -124,37 +124,42 @@ startup_error: {_startup_error or 'None'}
 
 @app.get("/")
 def home(request: Request, page: int = Query(default=1)):
-    # Sort all movies by Year desc, then Rating desc
-    sorted_movies = movies_df.sort_values(by=['Year', 'Rating'], ascending=[False, False]).to_dict(orient='records')
-    
-    per_page = 16
-    total_movies = len(sorted_movies)
-    total_pages = ceil(total_movies / per_page) if total_movies > 0 else 1
+    try:
+        # Sort all movies by Year desc, then Rating desc
+        sorted_movies = movies_df.sort_values(by=['Year', 'Rating'], ascending=[False, False]).to_dict(orient='records')
 
-    if page < 1:
-        page = 1
-    elif page > total_pages:
-        page = total_pages
+        per_page = 16
+        total_movies = len(sorted_movies)
+        total_pages = ceil(total_movies / per_page) if total_movies > 0 else 1
 
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_movies = sorted_movies[start:end]
+        if page < 1:
+            page = 1
+        elif page > total_pages:
+            page = total_pages
 
-    pagination = {
-        'current_page': page,
-        'total_pages': total_pages,
-        'prev_page': page - 1 if page > 1 else None,
-        'next_page': page + 1 if page < total_pages else None
-    }
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_movies = sorted_movies[start:end]
 
-    movie_reviews = load_reviews()
+        pagination = {
+            'current_page': page,
+            'total_pages': total_pages,
+            'prev_page': page - 1 if page > 1 else None,
+            'next_page': page + 1 if page < total_pages else None
+        }
 
-    return templates.TemplateResponse("home.html", {
-        "request": request,
-        "latest_movies": paginated_movies,
-        "pagination": pagination,
-        "movie_reviews": movie_reviews
-    })
+        movie_reviews = load_reviews()
+
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "latest_movies": paginated_movies,
+            "pagination": pagination,
+            "movie_reviews": movie_reviews
+        })
+    except Exception:
+        err = traceback.format_exc()
+        return HTMLResponse(f"<pre style='color:red;background:#111;padding:20px'>{err}</pre>", status_code=200)
+
 
 @app.get("/genres")
 def genres_index(request: Request, genres: list[str] = Query(default=[]), page: int = 1):
