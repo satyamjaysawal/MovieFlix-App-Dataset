@@ -1,13 +1,14 @@
 import os
 import json
 import uuid
+import traceback
 from math import ceil
 from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
 from fastapi import FastAPI, Request, Form, Query
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -24,7 +25,10 @@ secret_key = os.getenv('SECRET_KEY', 'movieflix-super-secret-key-12345')
 app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
 # Mount static files directory
-app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+try:
+    app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+except Exception as e:
+    print(f"Static mount warning: {e}")
 
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -55,7 +59,6 @@ def save_reviews(reviews):
         with open(REVIEWS_FILE, 'w', encoding='utf-8') as f:
             json.dump(reviews, f, indent=4, ensure_ascii=False)
     except Exception as e:
-        # Vercel has read-only filesystem — reviews stay in memory for this session
         print(f"Note: Reviews stored in memory only (read-only filesystem): {e}")
 
 
@@ -72,28 +75,54 @@ def get_flashed_messages(request: Request):
 templates.env.globals["get_flashed_messages"] = get_flashed_messages
 
 # Load movies dataset using absolute path
-movies_df = pd.read_csv(str(BASE_DIR / "MovieDataSet.csv"))
+_startup_error = None
+movies_df = None
+try:
+    csv_path = BASE_DIR / "MovieDataSet.csv"
+    print(f"Loading CSV from: {csv_path} (exists={csv_path.exists()})")
+    movies_df = pd.read_csv(str(csv_path))
+    default_image_url = "https://github.com/user-attachments/assets/eea04eb6-fdb8-477f-99b8-e4b2150c7421"
+
+    # Prepare dataset fields
+    movies_df['Genre'] = movies_df['Genre'].apply(lambda x: [g.strip() for g in x.split(',')] if isinstance(x, str) else [])
+
+    # Handle Movie Poster fallbacks
+    if 'Movie-Image-Url' not in movies_df.columns:
+        movies_df['Movie-Image-Url'] = default_image_url
+    else:
+        movies_df['Movie-Image-Url'] = movies_df['Movie-Image-Url'].apply(
+            lambda x: x if pd.notna(x) and str(x).strip() else default_image_url
+        )
+
+    # Fill other NaN fields
+    movies_df['Description'] = movies_df['Description'].fillna('')
+    movies_df['Actors'] = movies_df['Actors'].fillna('')
+    movies_df['Director'] = movies_df['Director'].fillna('')
+    movies_df['Rating'] = movies_df['Rating'].fillna(0.0)
+    movies_df['Votes'] = movies_df['Votes'].fillna(0)
+    movies_df['Revenue (Millions)'] = movies_df['Revenue (Millions)'].fillna(0.0)
+    movies_df['Metascore'] = movies_df['Metascore'].fillna(0)
+except Exception as e:
+    _startup_error = traceback.format_exc()
+    print(f"STARTUP ERROR: {_startup_error}")
+
 default_image_url = "https://github.com/user-attachments/assets/eea04eb6-fdb8-477f-99b8-e4b2150c7421"
 
-# Prepare dataset fields
-movies_df['Genre'] = movies_df['Genre'].apply(lambda x: [g.strip() for g in x.split(',')] if isinstance(x, str) else [])
-
-# Handle Movie Poster fallbacks
-if 'Movie-Image-Url' not in movies_df.columns:
-    movies_df['Movie-Image-Url'] = default_image_url
-else:
-    movies_df['Movie-Image-Url'] = movies_df['Movie-Image-Url'].apply(
-        lambda x: x if pd.notna(x) and str(x).strip() else default_image_url
-    )
-
-# Fill other NaN fields for clean display in Tailwind UI
-movies_df['Description'] = movies_df['Description'].fillna('')
-movies_df['Actors'] = movies_df['Actors'].fillna('')
-movies_df['Director'] = movies_df['Director'].fillna('')
-movies_df['Rating'] = movies_df['Rating'].fillna(0.0)
-movies_df['Votes'] = movies_df['Votes'].fillna(0)
-movies_df['Revenue (Millions)'] = movies_df['Revenue (Millions)'].fillna(0.0)
-movies_df['Metascore'] = movies_df['Metascore'].fillna(0)
+# Debug endpoint — shows startup errors on Vercel
+@app.get("/debug")
+def debug_info():
+    files_in_base = [str(p) for p in BASE_DIR.iterdir()] if BASE_DIR.exists() else []
+    return HTMLResponse(f"""
+    <pre>
+BASE_DIR: {BASE_DIR}
+BASE_DIR exists: {BASE_DIR.exists()}
+CSV exists: {(BASE_DIR / 'MovieDataSet.csv').exists()}
+templates exists: {(BASE_DIR / 'templates').exists()}
+static exists: {(BASE_DIR / 'static').exists()}
+files: {chr(10).join(files_in_base)}
+startup_error: {_startup_error or 'None'}
+    </pre>
+    """)
 
 
 @app.get("/")
