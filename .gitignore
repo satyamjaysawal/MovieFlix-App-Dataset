@@ -55,3 +55,4 @@ node_modules/
 # Front-end build folders (if applicable)
 dist/
 build/
+.vercel

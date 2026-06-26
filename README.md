@@ -1,39 +1,51 @@
+# 🎬 MovieFlix
 
+> **Live Demo:** [https://movie-flix-app-dataset.vercel.app](https://movie-flix-app-dataset.vercel.app)
 
-# MovieFlix
+MovieFlix is a premium cinematic movie discovery web application built with **FastAPI** and **Jinja2**. Explore movies, search by title/actor/director, filter by genres, check box office analytics, and submit anonymous reviews.
 
-MovieFlix is a web application built using Flask that allows users to explore movies, search for titles, and submit reviews. The app allows users to filter movies by genre, view popular and trending movies, and manage their movie reviews.
+---
 
-## Features
+## 📸 App Screenshots
 
-- **User Authentication:**
-  - Users can register, log in, and log out securely.
-  - Passwords are hashed using `Bcrypt` for security.
+### 🏠 Home Page
+![Home Page](static/screenshots/home.png)
 
-- **Movie Exploration:**
-  - Browse movies by genres.
-  - Search movies by title or description.
-  - View movie details such as title, rating, director, revenue, and more.
-  
-- **Movie Reviews:**
-  - Users can submit reviews for movies.
-  - Users can edit or delete their reviews.
-  - Reviews are associated with users and can only be edited or deleted by the reviewer.
+### 🎭 Browse by Genre
+![Genres Page](static/screenshots/genres.png)
 
-- **Trending Movies:**
-  - Displays the top-rated movies based on user votes.
-  - Displays the top-grossing movies based on revenue.
+### 🔥 Popular & Trending
+![Popular & Trending Page](static/screenshots/trending.png)
 
-## Technologies Used
+### 📊 Interactive Analytics Dashboard
+![Analytics Page](static/screenshots/analytics.png)
 
-- **Flask** - A lightweight Python web framework used to build the application.
-- **Flask-Bcrypt** - For password hashing and validation.
-- **Flask-Login** - For user session management.
-- **Pandas** - For handling and processing movie data.
-- **Bootstrap** - For responsive front-end design.
-- **Font Awesome** - For icons.
+### 🔍 Search Results
+![Search Results Page](static/screenshots/search.png)
 
-## Installation
+---
+
+## ✨ Features
+
+- **🎬 Movie Discovery** — Browse 1000+ movies with poster images, ratings, and details.
+- **🔍 Smart Search** — Search by title, director, actor, or description.
+- **🎭 Genre Filters** — Filter the Kaggle database by one or multiple genres.
+- **🔥 Popular & Trending** — Top-rated and highest-grossing movies at a glance.
+- **📊 Analytics Dashboard** — Interactive charts: genre distribution, revenue trends, rating correlations, top directors.
+- **⭐ Anonymous Reviews** — Submit your own star ratings and reviews without registration.
+- **🌙 Dark Mode Default** — Sleek dark-first design with light/dark toggle.
+
+## 🛠️ Technologies Used
+
+- **FastAPI** — High-performance Python web framework.
+- **Jinja2** — Templating engine for HTML rendering.
+- **Pandas** — For handling and processing movie dataset.
+- **TailwindCSS** — Utility-first CSS via CDN for responsive design.
+- **Chart.js** — Interactive data visualizations on the analytics page.
+- **Font Awesome** — Icons throughout the UI.
+- **Vercel** — Cloud deployment platform.
+
+## 🚀 Installation
 
 ### Prerequisites
 
@@ -42,24 +54,22 @@ MovieFlix is a web application built using Flask that allows users to explore mo
 
 ### Steps
 
-1. Clone the repository to your local machine:
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/movieflix.git
-   cd movieflix
+   git clone https://github.com/satyamjaysawal/MovieFlix-App-Dataset.git
+   cd MovieFlix-App-Dataset
    ```
 
 2. Create and activate a virtual environment:
 
-   On Windows:
-
+   **Windows:**
    ```bash
    python -m venv venv
    venv\Scripts\activate
    ```
 
-   On macOS/Linux:
-
+   **macOS/Linux:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
@@ -71,37 +81,35 @@ MovieFlix is a web application built using Flask that allows users to explore mo
    pip install -r requirements.txt
    ```
 
-4. Make sure you have the `MovieDataset.csv` file (with movie data) in the same directory as your project, or update the path in the code.
-
-5. Run the Flask application:
+4. Run the application:
 
    ```bash
    python app.py
    ```
 
-   The application will be available at `http://127.0.0.1:5000/`.
+   The app will be available at `http://127.0.0.1:8000/`
 
-## Usage
+## 📁 File Structure
 
-1. Visit the homepage and register or log in.
-2. Browse movies by selecting genres or use the search functionality.
-3. View popular and trending movies based on ratings and revenue.
-4. Submit, edit, or delete your movie reviews.
+```
+MovieFlix-App-Dataset/
+├── app.py                    # Main FastAPI application
+├── MovieDataSet.csv          # Movie dataset (1000+ movies)
+├── reviews.json              # Anonymous reviews storage
+├── requirements.txt          # Python dependencies
+├── vercel.json               # Vercel deployment config
+├── templates/
+│   ├── home.html             # Homepage with hero & movie grid
+│   ├── genre.html            # Genre filter & movie database
+│   ├── popular_trending.html # Box office charts
+│   ├── analytics.html        # Interactive analytics dashboard
+│   └── search.html           # Search results page
+└── static/
+    ├── bg.jpg                # Cinematic background image
+    ├── screenshots/          # App screenshots
+    └── *.jpg                 # Movie poster images
+```
 
-## File Structure
-
-- `app.py`: The main Flask application code.
-- `MovieDataset.csv`: The CSV file containing movie data.
-- `templates/`: Directory containing HTML templates for the application.
-  - `home.html`: Homepage template.
-  - `register.html`: Registration page template.
-  - `login.html`: Login page template.
-  - `genre.html`: Template to view and filter movies by genre.
-  - `search.html`: Template to display search results.
-  - `popular_trending.html`: Template to display trending movies.
-- `static/`: Directory containing static files (CSS, JavaScript, images, etc.).
-- `requirements.txt`: The Python dependencies required to run the application.
-
-## Contributing
+## 🤝 Contributing
 
 Feel free to fork this project and submit pull requests. If you encounter any bugs or have ideas for new features, please open an issue.
