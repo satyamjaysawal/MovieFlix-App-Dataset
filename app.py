@@ -7,37 +7,22 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Request, Form, Query
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
-from starlette.middleware.sessions import SessionMiddleware
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 load_dotenv()
 
 # Base directory — always resolves correctly on Vercel serverless too
 BASE_DIR = Path(__file__).resolve().parent
 
-app = FastAPI(title="MovieFlix")
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates"),
+    static_folder=str(BASE_DIR / "static"),
+    static_url_path="/static"
+)
 
-# Secret key for session management
-secret_key = os.getenv('SECRET_KEY', 'movieflix-super-secret-key-12345')
-app.add_middleware(SessionMiddleware, secret_key=secret_key)
-
-# NOTE: Static files are served by Vercel's @vercel/static builder directly.
-# Do NOT mount StaticFiles here — it crashes Vercel serverless cold starts.
-
-# Setup Jinja2 templates with context processor
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-
-# Safe context processor for flashed messages
-def flashed_messages_context(request: Request):
-    return {"get_flashed_messages": lambda req=None: get_flashed_messages(request)}
-
-templates.context_processors.append(flashed_messages_context)
-
-
-
-
+# Secret key for session management (used by flash/session)
+app.secret_key = os.getenv('SECRET_KEY', 'movieflix-super-secret-key-12345')
 
 # Reviews persistence file
 REVIEWS_FILE = BASE_DIR / "reviews.json"
@@ -68,22 +53,11 @@ def save_reviews(reviews):
         print(f"Note: Reviews stored in memory only (read-only filesystem): {e}")
 
 
-# Flash message utilities
-def flash(request: Request, message: str, category: str = "success"):
-    if "flash_messages" not in request.session:
-        request.session["flash_messages"] = []
-    request.session["flash_messages"].append({"message": message, "category": category})
-
-def get_flashed_messages(request: Request):
-    return request.session.pop("flash_messages", [])
-
-
 # Load movies dataset using absolute path
 _startup_error = None
 movies_df = None
 try:
     csv_path = BASE_DIR / "MovieDataSet.csv"
-    print(f"Loading CSV from: {csv_path} (exists={csv_path.exists()})")
     movies_df = pd.read_csv(str(csv_path))
     default_image_url = "https://github.com/user-attachments/assets/eea04eb6-fdb8-477f-99b8-e4b2150c7421"
 
@@ -110,28 +84,38 @@ except Exception as e:
     _startup_error = traceback.format_exc()
     print(f"STARTUP ERROR: {_startup_error}")
 
-default_image_url = "https://github.com/user-attachments/assets/eea04eb6-fdb8-477f-99b8-e4b2150c7421"
+
+# Register request globally for Flask/Jinja context compatibility if needed
+@app.context_processor
+def inject_globals():
+    return {
+        'request': request,
+        'get_flashed_messages': lambda *args, **kwargs: request.blueprints or [] # fallback/mock if needed
+    }
+
 
 # Debug endpoint — shows startup errors on Vercel
-@app.get("/debug")
+@app.route("/debug")
 def debug_info():
     files_in_base = [str(p) for p in BASE_DIR.iterdir()] if BASE_DIR.exists() else []
-    return HTMLResponse(f"""
+    return f"""
     <pre>
 BASE_DIR: {BASE_DIR}
 BASE_DIR exists: {BASE_DIR.exists()}
 CSV exists: {(BASE_DIR / 'MovieDataSet.csv').exists()}
 templates exists: {(BASE_DIR / 'templates').exists()}
 static exists: {(BASE_DIR / 'static').exists()}
-files: {chr(10).join(files_in_base)}
+files: {"<br>".join(files_in_base)}
 startup_error: {_startup_error or 'None'}
     </pre>
-    """)
+    """
 
 
-@app.get("/")
-def home(request: Request, page: int = Query(default=1)):
+@app.route("/")
+def home():
     try:
+        page = request.args.get("page", 1, type=int)
+        
         # Sort all movies by Year desc, then Rating desc
         sorted_movies = movies_df.sort_values(by=['Year', 'Rating'], ascending=[False, False]).to_dict(orient='records')
 
@@ -157,24 +141,26 @@ def home(request: Request, page: int = Query(default=1)):
 
         movie_reviews = load_reviews()
 
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "latest_movies": paginated_movies,
-            "pagination": pagination,
-            "movie_reviews": movie_reviews
-        })
+        return render_template("home.html", 
+            latest_movies=paginated_movies,
+            pagination=pagination,
+            movie_reviews=movie_reviews
+        )
     except Exception:
         err = traceback.format_exc()
-        return HTMLResponse(f"<pre style='color:red;background:#111;padding:20px'>{err}</pre>", status_code=200)
+        return f"<pre style='color:red;background:#111;padding:20px'>{err}</pre>", 200
 
 
-@app.get("/genres")
-def genres_index(request: Request, genres: list[str] = Query(default=[]), page: int = 1):
+@app.route("/genres")
+def genres_index():
     all_genres = set()
     for genre_list in movies_df['Genre']:
         all_genres.update(genre_list)
 
+    genres = request.args.getlist("genres")
     selected_genres = [g.lower() for g in genres]
+
+    page = request.args.get("page", 1, type=int)
 
     filtered_movies = []
     if selected_genres:
@@ -211,17 +197,17 @@ def genres_index(request: Request, genres: list[str] = Query(default=[]), page: 
 
     movie_reviews = load_reviews()
 
-    return templates.TemplateResponse("genre.html", {
-        "request": request,
-        "genres": sorted(all_genres),
-        "filtered_movies": paginated_movies,
-        "selected_genres": selected_genres,
-        "pagination": pagination,
-        "movie_reviews": movie_reviews
-    })
+    return render_template("genre.html", 
+        genres=sorted(all_genres),
+        filtered_movies=paginated_movies,
+        selected_genres=selected_genres,
+        pagination=pagination,
+        movie_reviews=movie_reviews
+    )
 
-@app.get("/popular_trending")
-def popular_trending(request: Request):
+
+@app.route("/popular_trending")
+def popular_trending():
     top_rated_df = movies_df.nlargest(12, 'Votes')[[ 'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director']]
     top_revenue_df = movies_df.nlargest(12, 'Revenue (Millions)')[[ 'Title', 'Rating', 'Votes', 'Revenue (Millions)', 'Movie-Image-Url', 'Genre', 'Year', 'Director']]
 
@@ -230,16 +216,17 @@ def popular_trending(request: Request):
 
     movie_reviews = load_reviews()
 
-    return templates.TemplateResponse("popular_trending.html", {
-        "request": request,
-        "top_rated_movies": top_rated_movies,
-        "top_revenue_movies": top_revenue_movies,
-        "movie_reviews": movie_reviews
-    })
+    return render_template("popular_trending.html", 
+        top_rated_movies=top_rated_movies,
+        top_revenue_movies=top_revenue_movies,
+        movie_reviews=movie_reviews
+    )
 
-@app.get("/search")
-def search(request: Request, query: str = ""):
-    query_clean = query.strip().lower()
+
+@app.route("/search")
+def search():
+    query = request.args.get("query", "").strip()
+    query_clean = query.lower()
     search_results = []
     if query_clean:
         for _, movie in movies_df.iterrows():
@@ -249,22 +236,21 @@ def search(request: Request, query: str = ""):
                 search_results.append(movie.to_dict())
 
     movie_reviews = load_reviews()
-    return templates.TemplateResponse("search.html", {
-        "request": request,
-        "search_results": search_results,
-        "movie_reviews": movie_reviews,
-        "query": query
-    })
+    return render_template("search.html", 
+        search_results=search_results,
+        movie_reviews=movie_reviews,
+        query=query
+    )
 
-@app.post("/submit_review")
-def submit_review(
-    request: Request,
-    movie_title: str = Form(...),
-    rating: int = Form(...),
-    review: str = Form(...),
-    username: str = Form("Anonymous")
-):
-    referrer = request.headers.get("referer", "/genres")
+
+@app.route("/submit_review", methods=["POST"])
+def submit_review():
+    movie_title = request.form.get("movie_title")
+    rating_val = request.form.get("rating", type=int)
+    review_text = request.form.get("review")
+    username = request.form.get("username", "Anonymous")
+
+    referrer = request.headers.get("Referer", "/")
 
     reviews = load_reviews()
     review_id = str(uuid.uuid4())
@@ -274,17 +260,18 @@ def submit_review(
     
     reviews[movie_title][review_id] = {
         'username': username.strip() if username.strip() else "Anonymous",
-        'rating': rating,
-        'review': review
+        'rating': rating_val,
+        'review': review_text
     }
     
     save_reviews(reviews)
-    flash(request, f"Your review for '{movie_title}' has been submitted successfully!", "success")
+    flash(f"Your review for '{movie_title}' has been submitted successfully!", "success")
 
-    return RedirectResponse(url=referrer, status_code=303)
+    return redirect(referrer)
 
-@app.get("/analytics")
-def analytics(request: Request):
+
+@app.route("/analytics")
+def analytics():
     # 1. Genre Analysis
     genre_counts = {}
     genre_revenue = {}
@@ -358,19 +345,17 @@ def analytics(request: Request):
     director_labels = [x[0] for x in top_directors]
     director_values = [round(x[1], 2) for x in top_directors]
 
-    return templates.TemplateResponse("analytics.html", {
-        "request": request,
-        "genre_labels": genre_labels,
-        "genre_movie_counts": genre_movie_counts,
-        "genre_avg_revenues": genre_avg_revenues,
-        "yearly_labels": yearly_labels,
-        "yearly_ratings": yearly_ratings,
-        "yearly_revenues": yearly_revenues,
-        "scatter_data": scatter_data,
-        "director_labels": director_labels,
-        "director_values": director_values
-    })
+    return render_template("analytics.html", 
+        genre_labels=genre_labels,
+        genre_movie_counts=genre_movie_counts,
+        genre_avg_revenues=genre_avg_revenues,
+        yearly_labels=yearly_labels,
+        yearly_ratings=yearly_ratings,
+        yearly_revenues=yearly_revenues,
+        scatter_data=scatter_data,
+        director_labels=director_labels,
+        director_values=director_values
+    )
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    app.run(host="127.0.0.1", port=8000, debug=True)
