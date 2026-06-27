@@ -278,7 +278,12 @@
                                                             {% endfor %}
                                                         </span>
                                                         <button type="button"
-                                                            onclick="editReview(this, '{{ movie['Title'] | replace("'", "\\'") }}', '{{ review_id }}', '{{ r_data['review'] | replace("'", "\\'") | replace('"', '&quot;') }}', {{ r_data['rating'] }}, '{{ reviewer | replace("'", "\\'") }}')"
+                                                            onclick="editReview(this)"
+                                                            data-title="{{ movie['Title'] | e }}"
+                                                            data-review-id="{{ review_id }}"
+                                                            data-review="{{ r_data['review'] | e }}"
+                                                            data-rating="{{ r_data['rating'] }}"
+                                                            data-reviewer="{{ reviewer | e }}"
                                                             class="ml-1 opacity-0 group-hover/review:opacity-100 transition-opacity duration-150 w-5 h-5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/20 hover:border-blue-400/40 flex items-center justify-center"
                                                             title="Edit Review">
                                                             <i class="fa-solid fa-pen text-[8px] text-blue-500"></i>
@@ -308,7 +313,7 @@
                                         <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider review-form-label">Your Review</span>
                                         <div class="flex items-center gap-1 star-rating-group">
                                             {% for idx in range(1, 6) %}
-                                            <button type="button" onclick="rateMovie(this, {{ idx }})" class="text-slate-300 dark:text-slate-700 hover:text-amber-400 hover:scale-110 transition-all duration-150 px-0.5">
+                                            <button type="button" data-index="{{ idx }}" onclick="rateMovie(this, parseInt(this.dataset.index))" class="text-slate-300 dark:text-slate-700 hover:text-amber-400 hover:scale-110 transition-all duration-150 px-0.5">
                                                 <i class="fa-solid fa-star text-xs"></i>
                                             </button>
                                             {% endfor %}
@@ -496,7 +501,12 @@
             }
         }
 
-        function editReview(editBtn, movieTitle, reviewId, reviewText, rating, username) {
+        function editReview(editBtn) {
+            const movieTitle = editBtn.dataset.title;
+            const reviewId   = editBtn.dataset.reviewId;
+            const reviewText = editBtn.dataset.review;
+            const rating     = parseInt(editBtn.dataset.rating, 10);
+            const username   = editBtn.dataset.reviewer;
             const reviewCard = editBtn.closest('.review-pane');
             const form = reviewCard.querySelector('.review-form');
             if (!form) return;
