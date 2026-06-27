@@ -26,8 +26,15 @@ app.add_middleware(SessionMiddleware, secret_key=secret_key)
 # NOTE: Static files are served by Vercel's @vercel/static builder directly.
 # Do NOT mount StaticFiles here — it crashes Vercel serverless cold starts.
 
-# Setup Jinja2 templates
+# Setup Jinja2 templates with context processor
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
+# Safe context processor for flashed messages
+@templates.context_processors.make_context_processor
+def flashed_messages_context(request: Request):
+    return {"get_flashed_messages": lambda req=None: get_flashed_messages(request)}
+
+
 
 
 # Reviews persistence file
@@ -68,8 +75,6 @@ def flash(request: Request, message: str, category: str = "success"):
 def get_flashed_messages(request: Request):
     return request.session.pop("flash_messages", [])
 
-# Register flash messages in Jinja global context
-templates.env.globals["get_flashed_messages"] = get_flashed_messages
 
 # Load movies dataset using absolute path
 _startup_error = None
