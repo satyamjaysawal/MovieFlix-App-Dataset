@@ -249,20 +249,25 @@ def submit_review():
     rating_val = request.form.get("rating", type=int)
     review_text = request.form.get("review")
     username = request.form.get("username", "Anonymous")
+    review_id = request.form.get("review_id", "").strip()  # non-empty = edit mode
 
     referrer = request.headers.get("Referer", "/")
 
     reviews = load_reviews()
-    review_id = str(uuid.uuid4())
 
     if movie_title not in reviews:
         reviews[movie_title] = {}
-    
+
+    # Edit mode: update existing review, otherwise create new
+    if not review_id or review_id not in reviews.get(movie_title, {}):
+        review_id = str(uuid.uuid4())
+
     reviews[movie_title][review_id] = {
         'username': username.strip() if username.strip() else "Anonymous",
         'rating': rating_val,
         'review': review_text
     }
+
     
     save_reviews(reviews)
     flash(f"Your review for '{movie_title}' has been submitted successfully!", "success")

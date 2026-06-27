@@ -422,8 +422,45 @@
             }
         }
 
+        function editReview(editBtn, movieTitle, reviewId, reviewText, rating, username) {
+            const reviewCard = editBtn.closest('.review-pane');
+            const form = reviewCard.querySelector('.review-form');
+            if (!form) return;
+            form.querySelector('.edit-review-id').value = reviewId;
+            form.querySelector('.username-field').value = username;
+            form.querySelector('.review-field').value = reviewText;
+            form.querySelector('.rating-input').value = rating;
+            const stars = form.querySelectorAll('.star-rating-group button');
+            stars.forEach((star, idx) => {
+                const i = star.querySelector('i');
+                i.className = idx < rating ? 'fa-solid fa-star text-xs text-amber-400' : 'fa-solid fa-star text-xs text-slate-300 dark:text-slate-700';
+            });
+            form.querySelector('.review-form-label').textContent = 'Edit Your Review';
+            form.querySelector('.submit-btn-text').textContent = 'Update Review';
+            form.querySelector('.cancel-edit-btn').classList.remove('hidden');
+            const submitBtn = form.querySelector('.submit-review-btn');
+            submitBtn.className = 'submit-review-btn flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 active:scale-95 text-white font-bold text-[11px] transition-all shadow-sm shadow-blue-500/20 flex items-center justify-center gap-1.5';
+            submitBtn.querySelector('i').className = 'fa-solid fa-check text-[10px]';
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            form.querySelector('.review-field').focus();
+        }
+
+        function cancelEdit(cancelBtn) {
+            const form = cancelBtn.closest('.review-form');
+            if (!form) return;
+            form.reset();
+            form.querySelector('.edit-review-id').value = '';
+            form.querySelectorAll('.star-rating-group button i').forEach(i => i.className = 'fa-solid fa-star text-xs text-slate-300 dark:text-slate-700');
+            form.querySelector('.review-form-label').textContent = 'Your Review';
+            form.querySelector('.submit-btn-text').textContent = 'Submit Review';
+            cancelBtn.classList.add('hidden');
+            const submitBtn = form.querySelector('.submit-review-btn');
+            submitBtn.className = 'submit-review-btn flex-1 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 active:scale-95 text-white font-bold text-[11px] transition-all shadow-sm shadow-violet-500/20 flex items-center justify-center gap-1.5';
+            submitBtn.querySelector('i').className = 'fa-solid fa-paper-plane text-[10px]';
+        }
 
         function rateMovie(starBtn, rating) {
+
             const group = starBtn.closest('.star-rating-group');
             const form = starBtn.closest('form');
             const input = form.querySelector('.rating-input');
