@@ -30,9 +30,11 @@ app.add_middleware(SessionMiddleware, secret_key=secret_key)
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Safe context processor for flashed messages
-@templates.context_processors.make_context_processor
 def flashed_messages_context(request: Request):
     return {"get_flashed_messages": lambda req=None: get_flashed_messages(request)}
+
+templates.context_processors.append(flashed_messages_context)
+
 
 
 
