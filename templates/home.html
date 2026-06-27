@@ -552,10 +552,29 @@
 
         function toggleReviews(btn) {
             const pane = btn.nextElementSibling;
-            const icon = btn.querySelector('i');
-            pane.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
+            const isHidden = pane.classList.contains('hidden');
+            
+            // Close all other review panes
+            document.querySelectorAll('.review-pane').forEach(p => {
+                if (p !== pane) {
+                    p.classList.add('hidden');
+                    const otherBtn = p.previousElementSibling;
+                    const otherIcon = otherBtn.querySelector('.fa-chevron-down');
+                    if (otherIcon) otherIcon.classList.remove('rotate-180');
+                }
+            });
+
+            // Toggle current pane
+            const icon = btn.querySelector('.fa-chevron-down');
+            if (isHidden) {
+                pane.classList.remove('hidden');
+                if (icon) icon.classList.add('rotate-180');
+            } else {
+                pane.classList.add('hidden');
+                if (icon) icon.classList.remove('rotate-180');
+            }
         }
+
 
         function rateMovie(starBtn, rating) {
             const group = starBtn.closest('.star-rating-group');
